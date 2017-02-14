@@ -1,0 +1,228 @@
+<div class="my-panel" style="word-wrap:break-word">
+    <div class="panel panel-primary">
+        <div class="panel-heading"><h3>Explore the Blockchain</h3></div>
+        <div class="panel-body">
+
+
+            <!-- Send -->
+            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#sendModal">
+                <span class="glyphicon glyphicon-send"></span> Send
+            </button>
+            <div class="modal fade" id="sendModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title"><span class="glyphicon glyphicon-send"></span>Send</h4><br />
+                            <span style="color: gray">Instantly send secure messages to any address</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <div class="form-group" ng-show="!isSignedIn">
+                                    <label for="from">From:</label>
+                                    <input ng-blur="validateTransactionSender(transaction.sender)"
+                                            ng-model="transaction.sender" type="text" class="form-control" id="from">
+                                    <span style="color:red">{{invalidSender}}</span>
+                                </div>
+                                <label for="to">To:</label>
+                                <input ng-blur="validateTransactionReceiver(transaction.receiver)"
+                                        ng-model="transaction.receiver" type="text" class="form-control" id="to">
+                                <span style="color:red">{{invalidReceiver}}</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message:</label>
+                                <textarea required
+                                        ng-model="transaction.message" style="resize: none" class="form-control" rows="5" id="message"></textarea>
+                            </div>
+                            <div class="form-group" ng-show="!isSignedIn">
+                                <label for="signature">Signature:</label>
+                                <input ng-blur="validateTransactionSigningKey(transaction.signature)"
+                                        ng-model="transaction.signature" ng-model="transaction.receiver" type="text" class="form-control" id="signature">
+                                <span style="color:red">{{invalidSigningKey}}</span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button ng-click="signEncryptSend(isSignedIn)" type="button"
+                                    data-toggle="modal" data-target="#myModal"
+                                    class="btn btn-default">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Transaction Success / Fail-->
+            <div class="modal fade" id="myModal" role="dialog" style="margin-top:10%">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body" align="center">
+                            <h4>{{transactionStatusMessage}}</h4>
+                            <span ng-show="transactionSent" style="color:green;font-size:40pt"
+                                  class="glyphicon glyphicon-ok-circle"></span>
+                            <span ng-show="!transactionSent" style="color:red;font-size:40pt"
+                                  class="glyphicon glyphicon-remove-circle"></span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Receive -->
+            <button ng-show="isSignedIn" ng-click="requestUserInfo()" type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#receiveModal">
+                <span class="glyphicon glyphicon-share"></span> Share
+            </button>
+            <div class="modal fade" id="receiveModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title"><span class="glyphicon glyphicon-share"></span>Share</h4><br />
+                            <span style="color: gray">Instantly receive secure messages from any address</span>
+                        </div>
+                        <div class="modal-body">
+                            <span style="font-size:12pt;font-weight:bold">Copy and share:</span><br />
+                            <div class="alert alert-info" role="alert" style="word-wrap:break-word">
+                                <span class="glyphicon glyphicon-copy"></span>
+                                {{user.publicKey}}
+                            </div>
+                            Copy this public key and share it with your sender via email, text, etc.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Generate key pair -->
+            <button ng-show="!isSignedIn" type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#generateModal">
+                <span class="glyphicon glyphicon-download-alt"></span> Generate Key Pair
+            </button>
+            <div class="modal fade" id="generateModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title"><span class="glyphicon glyphicon-download-alt"></span>Generate Key Pair</h4><br />
+                            <span style="color: gray">Download key pair to your file system</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-warning" role="alert">
+                                <h3>Disclaimer</h3>
+                                A new key pair will be generated to your file system. This is your duty to keep
+                                your private key safe. Blockchain Explorer is not responsible for loss of generated keys
+                                by any means.
+                            </div>
+                            <div class="alert alert-info" role="alert">
+                                Alternatively, you can sign up to our system where your keys will be saved in secure way.
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button ng-click="downloadKeys()" type="button" class="btn btn-default" data-dismiss="modal">Generate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr style="width:100%"/>
+            <table ng-show="hidetxs" class="table table-striped" style="table-layout:fixed">
+                <thead>
+                <tr>
+                    <th>From</th>
+                    <th>Signature</th>
+                    <th>Timestamp</th>
+                    <th>Message</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="tx in txs">
+                    <td style="word-wrap:break-word">{{tx.sender_public_key}}</td>
+                    <td style="word-wrap:break-word">
+                        {{tx.signature}}
+                        <br />
+                        <div align="right">
+                            <button ng-click="verifyTransaction(tx)"
+                                    data-toggle="modal" data-target="#verified"
+                                    type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-ok"></span> Verify
+                            </button>
+                        </div>
+                    </td>
+                    <td style="word-wrap:break-word">{{tx.timestamp}}</td>
+                    <td style="word-wrap:break-word">
+                        {{tx.message.iv + tx.message.ephem_public_key + tx.message.ciphertext + tx.message.mac}}
+                        <br />
+                        <div align="right">
+                            <button ng-click="decryptMessage(tx.message)"
+                                    data-toggle="modal" data-target="#decrypted"
+                                    type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-lock"></span> Read
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- Decrypt -->
+            <div class="modal fade" id="decrypted" role="dialog" style="margin-top:10%">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span>Decrypted message:</h4><br />
+                        </div>
+                        <div class="modal-body">
+                            <div class="panel-body">{{decrypted}}</div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Verify -->
+            <div class="modal fade" id="verified" role="dialog" style="margin-top:10%">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div style="color:green;font-size:40pt" ng-show="verified && !invalidPrivateKey" align="center">
+                                <span class="glyphicon glyphicon-ok"></span>
+                                Valid Signature
+                            </div>
+                            <div style="color:red;font-size:40pt" ng-show="!verified && !invalidPrivateKey" align="center">
+                                <span class="glyphicon glyphicon-remove"></span>
+                                Invalid Signature
+                            </div>
+                            <div style="color:red;font-size:40pt" ng-show="invalidPrivateKey" align="center">
+                                <span class="glyphicon glyphicon-remove-sign"></span>
+                                Unable to verify the transaction: bad private key.
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" ng-show="!isSignedIn">
+                <label for="publicKey">Enter your private key:</label>
+                <input ng-blur="validatePriv(privateKey)" ng-model="privateKey" type="text" class="form-control" id="privateKey">
+                <span style="color:red">{{invalidPriv}}</span>
+            </div>
+            <div class="form-group" ng-show="!isSignedIn">
+                <label for="publicKey">Enter your public key:</label>
+                <input ng-blur="validatePub(publicKey)" ng-model="publicKey" type="text" class="form-control" id="publicKey">
+                <span style="color:red">{{invalidPub}}</span>
+            </div>
+            <div align="right">
+                <button ng-show="!hidetxs" ng-click="getTransactions()" type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-eye-open"></span> Show Transactions
+                </button>
+            </div>
+            <div align="right">
+                <button ng-click="hideTransactions()" ng-show="hidetxs" type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-eye-close"></span> Hide Transactions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

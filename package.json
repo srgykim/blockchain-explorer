@@ -1,0 +1,31 @@
+{
+  "name": "blockchain-explorer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "angular": "^1.6.2",
+    "angular-sanitize": "^1.6.2",
+    "angular-ui-router": "^0.4.2",
+    "bcrypt": "^1.0.2",
+    "body-parser": "^1.16.1",
+    "bootstrap": "^3.3.7",
+    "cassandra-driver": "^3.2.0",
+    "crypto": "0.0.3",
+    "eccrypto": "^1.0.3",
+    "express": "^4.14.1",
+    "express-zip": "^2.0.1",
+    "jquery": "^3.1.1",
+    "jsonwebtoken": "^7.2.1",
+    "merkle": "^0.5.1",
+    "mongoose": "^4.8.2"
+  },
+  "devDependencies": {
+    "webpack": "^2.2.1"
+  }
+}

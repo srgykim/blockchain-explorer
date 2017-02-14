@@ -1,0 +1,60 @@
+<div class="container">
+    <div class="row main">
+        <div class="panel-heading">
+            <div class="panel-title text-center">
+                <h1 class="title">Create your Account</h1>
+            </div>
+        </div>
+        <div class="main-login main-center">
+            <form class="form-horizontal" method="post" action="#">
+
+                <div class="form-group">
+                    <label for="email" class="cols-sm-2 control-label">Email</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+                            <input ng-model="user.email" ng-blur="validateEmail(user.email)"
+                                   type="text" class="form-control"
+                                   name="email" id="email"  placeholder="Enter your Email"/>
+                        </div>
+                        <div class="validation-message">{{incorrectEmail}}</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="cols-sm-2 control-label">Password</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                            <input ng-model="user.password" ng-blur="validatePassword(user.password)"
+                                   type="password" class="form-control"
+                                   name="password" id="password"  placeholder="Enter your Password"/>
+                        </div>
+                    </div>
+                    <div class="validation-message" ng-bind-html="incorrectPassword"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                            <input ng-model="user.confirmation" ng-blur="confirmPassword(user.password, user.confirmation)"
+                                   type="password" class="form-control"
+                                   name="confirm" id="confirm"  placeholder="Confirm your Password"/>
+                        </div>
+                    </div>
+                    <div class="validation-message">{{passwordsDoNotMatch}}</div>
+                </div>
+                <div class="validation-message">{{errorMessage}}</div>
+                <div class="form-group">
+                    <button ng-click="createUser(user)"
+                            type="button" class="btn btn-primary btn-lg btn-block login-button">Continue</button>
+                </div>
+                <div class="login-register">
+                    <a ui-sref="signin">Sign In</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
