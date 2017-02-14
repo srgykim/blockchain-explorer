@@ -29,3 +29,6 @@ npm install -g webpack
 nodemon
 webpack --watch
 ```
+
+## Block structure:
+Refer to cassandra-ddl.cql to create schema
