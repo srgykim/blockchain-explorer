@@ -6,3 +6,4 @@ angular.module('blockchainWalletApp').service('validationService', require('./va
 angular.module('blockchainWalletApp').service('signupService', require('./signup'));
 angular.module('blockchainWalletApp').service('signinService', require('./signin'));
 angular.module('blockchainWalletApp').service('mainService', require('./main'));
+angular.module('blockchainWalletApp').service('blockService', require('./block'));

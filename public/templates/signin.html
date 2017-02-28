@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" ng-init="redirectIfSignedIn()">
     <div class="row main">
         <div class="panel-heading">
             <div class="panel-title text-center">
@@ -9,15 +9,15 @@
             <form class="form-horizontal" method="post" action="#">
 
                 <div class="form-group">
-                    <label for="email" class="cols-sm-2 control-label">Email</label>
+                    <label for="email" class="cols-sm-2 control-label">Username</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
-                            <input ng-model="user.email" ng-blur="validateEmail(user.email)"
+                            <input ng-model="user.username" ng-blur="validateUsername(user.username)"
                                    type="text" class="form-control"
-                                   name="email" id="email"  placeholder="Enter your Email"/>
+                                   name="email" id="email"  placeholder="Enter your Username"/>
                         </div>
-                        <div class="validation-message">{{incorrectEmail}}</div>
+                        <div class="validation-message" ng-bind-html="incorrectUsername"></div>
                     </div>
                 </div>
 

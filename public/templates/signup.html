@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" ng-init="redirectIfSignedIn();canSignUp();">
     <div class="row main">
         <div class="panel-heading">
             <div class="panel-title text-center">
@@ -9,15 +9,15 @@
             <form class="form-horizontal" method="post" action="#">
 
                 <div class="form-group">
-                    <label for="email" class="cols-sm-2 control-label">Email</label>
+                    <label for="username" class="cols-sm-2 control-label">Username</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
-                            <input ng-model="user.email" ng-blur="validateEmail(user.email)"
+                            <input ng-model="user.username" ng-blur="validateUsername(user.username)"
                                    type="text" class="form-control"
-                                   name="email" id="email"  placeholder="Enter your Email"/>
+                                   name="username" id="username"  placeholder="Enter your Username"/>
                         </div>
-                        <div class="validation-message">{{incorrectEmail}}</div>
+                        <div class="validation-message" ng-bind-html="incorrectUsername"></div>
                     </div>
                 </div>
 
@@ -46,15 +46,45 @@
                     </div>
                     <div class="validation-message">{{passwordsDoNotMatch}}</div>
                 </div>
-                <div class="validation-message">{{errorMessage}}</div>
                 <div class="form-group">
-                    <button ng-click="createUser(user)"
+                    <button ng-disabled="!canContinue" ng-click="canSignUp()" data-toggle="modal" data-target="#signupModal"
                             type="button" class="btn btn-primary btn-lg btn-block login-button">Continue</button>
                 </div>
                 <div class="login-register">
                     <a ui-sref="signin">Sign In</a>
                 </div>
+                <div class="validation-message">{{errorMessage}}</div>
             </form>
+            <!-- Signup, generate key pair -->
+            <div class="modal fade" id="signupModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Sign Up to Blockchain Explorer</h4><br />
+                            <span style="color: gray">Sign up to our system.</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-warning" role="alert">
+                                <h3>Disclaimer</h3>
+                                A new key pair will be generated to your file system. This is your duty to keep
+                                your private key safe. Blockchain Explorer is not responsible for loss of generated keys
+                                by any means.
+                            </div>
+                            <div class="alert alert-info" role="alert">
+                                <h3>Note:</h3>
+                                <b>TO DOWNLOAD THE KEYS POP-UP MUST BE ENABLED!</b><br />
+                                Your username will serve as an alias to your public key. Share it with other
+                                Blockchain Explorer members to get secure data.
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button ng-click="createUser(user)"
+                                    type="button" class="btn btn-default" data-dismiss="modal">Sign Up</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

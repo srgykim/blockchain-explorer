@@ -1,12 +1,16 @@
 'use strict';
 
 function ValidationService() {
-    this.validateEmail = function(email) {
-        var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if(regex.test(email)) {
+    this.validateUsername = function(username) {
+        var regex = /^[A-Za-z0-9_]{3,15}$/;
+        if(regex.test(username)) {
             return ""
         }
-        return "Incorrect Email";
+        return "Username must satisfy these criterias:<br />" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;- at least 3 characters long<br />" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;- shorter than 15 characters<br />" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;- contain only alphabetic symbols and <br />" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numbers";
     };
 
     this.validatePassword = function(password) {
@@ -15,10 +19,10 @@ function ValidationService() {
             return ""
         }
         return "Password must satisfy these criterias:<br />" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;- at least 8 characters long<br/ >" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;- contain at least 1 digit<br/ >" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;- contain at least 1 upper case letter<br/ >" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;- contain at least 1 lower case letter<br/ >" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;- at least 8 characters long<br />" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;- contain at least 1 digit<br />" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;- contain at least 1 upper case letter<br />" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;- contain at least 1 lower case letter<br />" +
             "&nbsp;&nbsp;&nbsp;&nbsp;- must not contain special characters";
     };
 

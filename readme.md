@@ -1,7 +1,6 @@
 #Blockchain Explorer
 
 ##Requirements:
-- MongoDB
 - Cassandra (cluster needs to be installed with CCM).
 Both databases on OS X can be installed with [homebrew](http://brew.sh/).
 
@@ -10,20 +9,20 @@ Both databases on OS X can be installed with [homebrew](http://brew.sh/).
 ```
 npm install
 ```
-- Run MongoDB:
-```
-mongod
-```
+
 - Create Cassandra cluster as described [here](https://github.com/pcmanus/ccm).
+
 - Run the cluster:
 ```
 ccm start
 ```
+
 - Install nodemon and webpack global modules:
 ```
 npm install -g nodemon
 npm install -g webpack
 ```
+
 - Run the server and webpack:
 ```
 nodemon

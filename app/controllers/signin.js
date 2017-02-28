@@ -3,8 +3,14 @@
 function SigninCtrl($scope, $rootScope, $window,
                     signinService, validationService) {
 
-    $scope.validateEmail = function(email) {
-        $scope.incorrectEmail = validationService.validateEmail(email);
+    $scope.redirectIfSignedIn = function() {
+        if ($rootScope.isSignedIn) {
+            $window.location.href = "/#!/"
+        }
+    };
+
+    $scope.validateUsername = function(username) {
+        $scope.incorrectUsername = validationService.validateUsername(username);
     };
 
     $scope.authenticateUser = function(user) {

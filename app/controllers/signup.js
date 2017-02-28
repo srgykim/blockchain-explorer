@@ -1,10 +1,16 @@
 'use strict';
 
-function SignupCtrl($scope, $rootScope, $window,
+function SignupCtrl($scope, $rootScope, $window, $interval,
                     signupService, validationService) {
 
-    $scope.validateEmail = function(email) {
-        $scope.incorrectEmail = validationService.validateEmail(email);
+    $scope.redirectIfSignedIn = function() {
+        if ($rootScope.isSignedIn) {
+            $window.location.href = "/#!/"
+        }
+    };
+
+    $scope.validateUsername = function(username) {
+        $scope.incorrectUsername = validationService.validateUsername(username);
     };
 
     $scope.validatePassword = function(password) {
@@ -15,27 +21,26 @@ function SignupCtrl($scope, $rootScope, $window,
         $scope.passwordsDoNotMatch = validationService.confirmPassword(password, confirmation);
     };
 
-    $scope.canContinue = function() {
-        return ($scope.incorrectEmail === "" &&
-                $scope.incorrectPassword === "" &&
-                $scope.passwordsDoNotMatch === "" &&
-                $scope.user.email != "" &&
-                $scope.user.password != "" &&
-                $scope.user.confirmation != "");
+    $scope.canSignUp = function() {
+        $interval(function() {
+            $scope.canContinue = $scope.incorrectUsername == "" &&
+                $scope.incorrectPassword == "" &&
+                $scope.passwordsDoNotMatch == "" &&
+                $scope.username != "" &&
+                $scope.password != "" &&
+                $scope.confirmation != "";
+        }, 100);
     };
 
     $scope.createUser = function(user) {
-        if ($scope.canContinue()) {
-            signupService.createUser(user, function(success) {
-                if (success) {
-                    $window.localStorage.isSignedIn = true;
-                    $scope.errorMessage = "";
-                    $window.location.href = "/#!/";
-                } else {
-                    $scope.errorMessage = "Email is already registered.";
-                }
-            });
-        }
+        signupService.createUser(user, function(success) {
+            if (success) {
+                $scope.errorMessage = "";
+                $window.location.href = "/#!/";
+            } else {
+                $scope.errorMessage = "This username is already registered.";
+            }
+        });
     };
 }
 

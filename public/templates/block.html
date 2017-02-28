@@ -1,0 +1,84 @@
+<div class="my-panel" style="word-wrap:break-word" ng-init="getBlocks()">
+    <div class="panel panel-info">
+        <div class="panel-heading"><h3>Explore the Blockchain</h3></div>
+        <div class="panel-body">
+            <table class="table table-striped" style="table-layout:fixed">
+                <thead>
+                <tr>
+                    <th>Height</th>
+                    <th>Previous Block</th>
+                    <th>Merkle Root</th>
+                    <th>Timestamp</th>
+                    <th>Transaction</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="block in blocks | orderBy:'-height'">
+                    <td style="word-wrap:break-word">{{block.height}}</td>
+                    <td style="word-wrap:break-word">{{block.previous_block_hash}}</td>
+                    <td style="word-wrap:break-word">{{block.merkle_root}}</td>
+                    <td style="word-wrap:break-word">{{block.timestamp}}</td>
+                    <td style="word-wrap:break-word">
+                        <button ng-click="saveTempDetails(block.transaction)"
+                                data-toggle="modal" data-target="#details"
+                                type="button" class="btn btn-default btn-sm">
+                            Details
+                        </button>
+                </tr>
+                </tbody>
+            </table>
+            <!-- Show Transaction Details -->
+            <div class="modal fade" id="details" role="dialog" style="margin-top:10%">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>Transaction Details:</h4><br />
+                        </div>
+                        <div class="modal-body">
+                            <div class="panel-body">
+                                <table class="table table-striped" style="table-layout:fixed">
+                                    <thead>
+                                    <tr>
+                                        <th>Sender</th>
+                                        <th>Receiver</th>
+                                        <th>Signature</th>
+                                        <th>Timestamp</th>
+                                        <th>Data</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td style="word-wrap:break-word">
+                                            {{details.sender_public_key}}
+                                        </td>
+                                        <td style="word-wrap:break-word">
+                                            {{details.receiver_public_key}}
+                                        </td>
+                                        <td style="word-wrap:break-word">
+                                            {{details.signature}}
+                                        </td>
+                                        <td style="word-wrap:break-word">
+                                            {{details.timestamp}}
+                                        </td>
+                                        <td style="word-wrap:break-word">
+                                            {{
+                                                details.data.iv +
+                                                details.data.ephem_public_key +
+                                                details.data.ciphertext +
+                                                details.data.mac
+                                            }}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

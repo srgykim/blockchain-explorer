@@ -3,15 +3,15 @@
 function SigninService($http, $window) {
 
     this.authentcateUser = function(user, callback) {
-        $http.post('/api/auth', user).then(function(response) {
-            if (response.data.success) {
+        $http.post('/api/auth', user)
+            .then(function(response) {
                 $window.localStorage.token = response.data.token;
-                $window.localStorage.email = user.email;
+                $window.localStorage.username = user.username;
                 callback(true);
-            } else {
+            })
+            .catch(function(err) {
                 callback(false);
-            }
-        });
+            });
     };
 }
 

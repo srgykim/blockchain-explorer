@@ -4,21 +4,17 @@ function SignupService($http, $window) {
 
     this.createUser = function(user, callback) {
         $http.post('/api/users', user)
-        .then(function(response) {
-            if (response.data.success) {
-                $http.post('/api/auth', user).then(function(response) {
-                    if (response.data.success) {
-                        $window.localStorage.token = response.data.token;
-                        $window.localStorage.email = user.email;
-                        callback(true);
-                    } else {
-                        callback(false);
-                    }
-                });
-            } else {
+            .then(function() {
+                return $http.post('/api/auth', user);
+            }).then(function(response) {
+                $window.localStorage.token = response.data.token;
+                $window.localStorage.username = user.username;
+                $window.open('/api/users/keys');
+                callback(true);
+            })
+            .catch(function(err) {
                 callback(false);
-            }
-        });
+            });
     };
 }
 

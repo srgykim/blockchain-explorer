@@ -3,7 +3,7 @@
 var angular = require('angular');
 
 var app = angular.module('blockchainWalletApp', [require('angular-sanitize'),
-    require('angular-ui-router')]);
+    require('angular-ui-router'), require('ng-file-upload'), require('angular-ui-bootstrap')]);
 
 app.config(function($stateProvider, $urlRouterProvider) {
 
@@ -18,13 +18,17 @@ app.config(function($stateProvider, $urlRouterProvider) {
             main: {
                 templateUrl: '/templates/main.html',
                 controller: 'mainCtrl'
+            },
+            block: {
+                templateUrl: '/templates/block.html',
+                controller: 'blockCtrl'
             }
         }
     };
 
     var signupState = {
         name: 'signup',
-        url: '/singup',
+        url: '/signup',
         views: {
             navbar: {
                 templateUrl: '/templates/navbar.html',
@@ -34,6 +38,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
                 templateUrl: '/templates/signup.html',
                 controller: 'signupCtrl'
             }
+
         }
     };
 
