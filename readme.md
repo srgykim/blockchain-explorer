@@ -1,8 +1,11 @@
 #Blockchain Explorer
 
+See:
+http://ec2-54-218-78-211.us-west-2.compute.amazonaws.com:9000/
+
 ##Requirements:
 - Cassandra (cluster needs to be installed with CCM).
-Both databases on OS X can be installed with [homebrew](http://brew.sh/).
+It can be installed with [homebrew](http://brew.sh/).
 
 ##How to run the app:
 - Install dependencies (from the app directory):
