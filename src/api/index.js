@@ -190,6 +190,7 @@ router.post("/blocks", function(req, res) {
                     return client.execute(receiverPubQuery, [bindVariables.tx.receiverUsername]);
                 })
                 .then(function(result) {
+                    console.log(result.rows[0].public_key);
                     if (result.rows[0].public_key) {
                         // encrypt transaction data
                         bindVariables.tx.data = new Buffer(bindVariables.tx.data);
