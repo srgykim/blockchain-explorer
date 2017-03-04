@@ -38,18 +38,18 @@ angular.module('blockchainWalletApp').directive('main', __webpack_require__(14))
 
 var angular = __webpack_require__(1);
 
-angular.module('blockchainWalletApp').service('validationService', __webpack_require__(20));
-angular.module('blockchainWalletApp').service('signupService', __webpack_require__(19));
-angular.module('blockchainWalletApp').service('signinService', __webpack_require__(18));
-angular.module('blockchainWalletApp').service('mainService', __webpack_require__(17));
-angular.module('blockchainWalletApp').service('blockService', __webpack_require__(39));
+angular.module('blockchainWalletApp').service('validationService', __webpack_require__(21));
+angular.module('blockchainWalletApp').service('signupService', __webpack_require__(20));
+angular.module('blockchainWalletApp').service('signinService', __webpack_require__(19));
+angular.module('blockchainWalletApp').service('mainService', __webpack_require__(18));
+angular.module('blockchainWalletApp').service('blockService', __webpack_require__(17));
 
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(21);
+__webpack_require__(22);
 module.exports = 'ngSanitize';
 
 
@@ -57,7 +57,7 @@ module.exports = 'ngSanitize';
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(22);
+__webpack_require__(23);
 
 module.exports = 'ui.bootstrap';
 
@@ -4756,7 +4756,7 @@ angular.module('ui.router.state')
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(36);
+__webpack_require__(37);
 module.exports = 'ngFileUpload';
 
 /***/ }),
@@ -5115,6 +5115,29 @@ module.exports = SignupDirective;
 "use strict";
 
 
+function BlockService($http) {
+
+    this.getBlocks = function(callback) {
+        $http.get('/api/blocks')
+            .then(function(response) {
+                callback(true, response.data.blocks);
+            })
+            .catch(function(err) {
+                callback(false, []);
+            });
+    };
+}
+
+module.exports = BlockService;
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 function MainService($http, $window) {
 
     this.downloadKeys = function() {
@@ -5256,7 +5279,7 @@ module.exports = MainService;
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5281,7 +5304,7 @@ module.exports = SigninService;
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5309,7 +5332,7 @@ module.exports = SignupService;
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5368,7 +5391,7 @@ function ValidationService() {
 module.exports = ValidationService;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 /**
@@ -6113,7 +6136,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 /*
@@ -13894,7 +13917,6 @@ angular.module('ui.bootstrap.timepicker').run(function() {!angular.$$csp().noInl
 angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTypeaheadCss && angular.element(document).find('head').prepend('<style type="text/css">[uib-typeahead-popup].dropdown-menu{display:block;}</style>'); angular.$$uibTypeaheadCss = true; });
 
 /***/ }),
-/* 23 */,
 /* 24 */,
 /* 25 */,
 /* 26 */,
@@ -13907,7 +13929,8 @@ angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInli
 /* 33 */,
 /* 34 */,
 /* 35 */,
-/* 36 */
+/* 36 */,
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/**!
@@ -16812,7 +16835,7 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16886,29 +16909,5 @@ __webpack_require__(2);
 __webpack_require__(3);
 __webpack_require__(4);
 
-/***/ }),
-/* 38 */,
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function BlockService($http) {
-
-    this.getBlocks = function(callback) {
-        $http.get('/api/blocks')
-            .then(function(response) {
-                callback(true, response.data.blocks);
-            })
-            .catch(function(err) {
-                callback(false, []);
-            });
-    };
-}
-
-module.exports = BlockService;
-
-
 /***/ })
-],[37]);
+],[38]);

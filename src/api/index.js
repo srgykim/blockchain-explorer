@@ -186,14 +186,21 @@ router.post("/blocks", function(req, res) {
                     bindVariables.tx.signature = signature.toString("hex");
 
                     // find receiver's public key by username
-                    var receiverPubQuery = "SELECT public_key FROM user WHERE username = ?";console.log(bindVariables.tx.receiverUsername);
+                    var receiverPubQuery = "SELECT public_key FROM user WHERE username = ?";
                     return client.execute(receiverPubQuery, [bindVariables.tx.receiverUsername]);
                 })
                 .then(function(result) {
-                    // encrypt transaction data
-                    bindVariables.tx.data = new Buffer(bindVariables.tx.data);
-                    bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
-                    return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
+                    if (result.rows[0].public_key) {
+                        // encrypt transaction data
+                        bindVariables.tx.data = new Buffer(bindVariables.tx.data);
+                        bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
+                        return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
+                    } else {
+                        res.json({
+                            success: false,
+                            message: "User not found"
+                        });
+                    }
                 })
                 .then(function(encrypted) {
                     bindVariables.tx.data = {
