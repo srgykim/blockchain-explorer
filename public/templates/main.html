@@ -1,4 +1,4 @@
-<div class="my-panel" style="word-wrap:break-word" ng-init="initView()">
+<div class="my-panel" class="word-wrap" ng-init="initView()">
     <div class="panel panel-default">
         <div class="panel-heading"><h3>Send or Receive Secure Data</h3></div>
         <div class="panel-body">
@@ -14,7 +14,7 @@
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                             <h4 class="modal-title"><span class="glyphicon glyphicon-send"></span>Send</h4><br />
-                            <span style="color: gray">Instantly send secure data to anyone</span>
+                            <span class="text-muted">Instantly send secure data to anyone</span>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
@@ -25,7 +25,7 @@
                                     </label>
                                     <input ng-blur="validateTransactionSender(tx.senderPublicKey)"
                                             ng-model="tx.senderPublicKey" type="text" class="form-control" id="from">
-                                    <span style="color:red">{{invalidSender}}</span>
+                                    <span class="text-alert">{{invalidSender}}</span>
                                 </div>
                                 <div class="form-group" ng-show="!isSignedIn">
                                     <label for="to">
@@ -34,7 +34,7 @@
                                     </label>
                                     <input ng-blur="validateTransactionReceiver(tx.receiverPublicKey)"
                                            ng-model="tx.receiverPublicKey" type="text" class="form-control" id="to">
-                                    <span style="color:red">{{invalidReceiver}}</span>
+                                    <span class="text-alert">{{invalidReceiver}}</span>
                                 </div>
                                 <div class="form-group" ng-show="isSignedIn">
                                     <label for="to_u">
@@ -61,7 +61,7 @@
                                 </label>
                                 <input ng-blur="validateTransactionSigningKey(tx.senderPrivateKey)"
                                         ng-model="tx.senderPrivateKey" ng-model="transaction.receiver" type="text" class="form-control" id="signature">
-                                <span style="color:red">{{invalidSigningKey}}</span>
+                                <span class="text-alert">{{invalidSigningKey}}</span>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -74,14 +74,14 @@
                 </div>
             </div>
             <!--Transaction Success / Fail-->
-            <div class="modal fade" id="myModal" role="dialog" style="margin-top:10%">
+            <div class="modal fade" id="myModal" role="dialog">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-body" align="center">
                             <h4>{{transactionStatusMessage}}</h4>
-                            <span ng-show="transactionSent" style="color:green;font-size:40pt"
+                            <span ng-show="transactionSent" class="modal-success"
                                   class="glyphicon glyphicon-ok-circle"></span>
-                            <span ng-show="!transactionSent" style="color:red;font-size:40pt"
+                            <span ng-show="!transactionSent" class="modal-fail"
                                   class="glyphicon glyphicon-remove-circle"></span>
                         </div>
                         <div class="modal-footer">
@@ -101,11 +101,11 @@
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                             <h4 class="modal-title"><span class="glyphicon glyphicon-share"></span>Share</h4><br />
-                            <span style="color: gray">Instantly receive secure data from any address</span>
+                            <span class="text-muted">Instantly receive secure data from any address</span>
                         </div>
                         <div class="modal-body">
                             <span style="font-size:12pt;font-weight:bold">Copy and share:</span><br />
-                            <div class="alert alert-info" role="alert" style="word-wrap:break-word">
+                            <div class="alert alert-info" role="alert" class="word-wrap">
                                 <span class="glyphicon glyphicon-copy"></span>
                                 {{user.username}}
                             </div>
@@ -129,7 +129,7 @@
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                             <h4 class="modal-title"><span class="glyphicon glyphicon-download-alt"></span>Generate Key Pair</h4><br />
-                            <span style="color: gray">Download key pair to your file system</span>
+                            <span class="text-muted">Download key pair to your file system</span>
                         </div>
                         <div class="modal-body">
                             <div class="alert alert-warning" role="alert">
@@ -148,8 +148,8 @@
                     </div>
                 </div>
             </div>
-            <hr style="width:100%"/>
-            <table ng-show="hidetxs" class="table table-striped" style="table-layout:fixed">
+            <hr>
+            <table ng-show="hidetxs" class="table table-striped">
                 <thead>
                 <tr>
                     <th>From</th>
@@ -160,8 +160,8 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="tx in txs">
-                    <td style="word-wrap:break-word">{{tx.sender_public_key}}</td>
-                    <td style="word-wrap:break-word">
+                    <td class="word-wrap">{{tx.sender_public_key}}</td>
+                    <td class="word-wrap">
                         {{tx.signature}}
                         <br />
                         <div align="right">
@@ -172,8 +172,8 @@
                             </button>
                         </div>
                     </td>
-                    <td style="word-wrap:break-word">{{tx.timestamp}}</td>
-                    <td style="word-wrap:break-word">
+                    <td class="word-wrap">{{tx.timestamp}}</td>
+                    <td class="word-wrap">
                         {{tx.data.iv + tx.data.ephem_public_key + tx.data.ciphertext + tx.data.mac}}
                         <br />
                         <div align="right">
@@ -188,7 +188,7 @@
                 </tbody>
             </table>
             <!-- Decrypt -->
-            <div class="modal fade" id="decrypted" role="dialog" style="margin-top:10%">
+            <div class="modal fade" id="decrypted" role="dialog">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -212,7 +212,7 @@
                                 </label>
                                 <input ng-blur="validateTransactionSigningKeyForward(txf.senderPrivateKey)"
                                        ng-model="txf.senderPrivateKey" ng-model="transaction.receiver" type="text" class="form-control" id="signature_f">
-                                <span style="color:red">{{invalidSigningKeyForward}}</span>
+                                <span class="text-alert">{{invalidSigningKeyForward}}</span>
                             </div>
                             <div align="center">
                                 <button ng-click="forward()"
@@ -230,19 +230,19 @@
                 </div>
             </div>
             <!-- Verify -->
-            <div class="modal fade" id="verified" role="dialog" style="margin-top:10%">
+            <div class="modal fade" id="verified" role="dialog">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <div style="color:green;font-size:40pt" ng-show="verified && !invalidPrivateKey" align="center">
+                            <div class="modal-success" ng-show="verified && !invalidPrivateKey" align="center">
                                 <span class="glyphicon glyphicon-ok"></span>
                                 Valid Signature
                             </div>
-                            <div style="color:red;font-size:40pt" ng-show="!verified && !invalidPrivateKey" align="center">
+                            <div class="modal-fail" ng-show="!verified && !invalidPrivateKey" align="center">
                                 <span class="glyphicon glyphicon-remove"></span>
                                 Invalid Signature
                             </div>
-                            <div style="color:red;font-size:40pt" ng-show="invalidPrivateKey" align="center">
+                            <div class="modal-fail" ng-show="invalidPrivateKey" align="center">
                                 <span class="glyphicon glyphicon-remove-sign"></span>
                                 Unable to verify the transaction: bad private key.
                             </div>
@@ -256,12 +256,12 @@
             <div class="form-group">
                 <label for="publicKey">Enter your private key:</label>
                 <input ng-blur="validatePriv(privateKey)" ng-model="privateKey" type="text" class="form-control" id="privateKey">
-                <span style="color:red">{{invalidPriv}}</span>
+                <span class="text-alert">{{invalidPriv}}</span>
             </div>
             <div class="form-group" ng-show="!isSignedIn">
                 <label for="publicKey">Enter your public key:</label>
                 <input ng-blur="validatePub(publicKey)" ng-model="publicKey" type="text" class="form-control" id="publicKey">
-                <span style="color:red">{{invalidPub}}</span>
+                <span class="text-alert">{{invalidPub}}</span>
             </div>
             <div align="right">
                 <button ng-show="!hidetxs" ng-click="getTransactions()" type="button" class="btn btn-default btn-sm">

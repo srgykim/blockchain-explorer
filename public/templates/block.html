@@ -1,8 +1,8 @@
-<div class="my-panel" style="word-wrap:break-word" ng-init="getBlocks()">
+<div class="my-panel" class="word-wrap" ng-init="getBlocks()">
     <div class="panel panel-info">
         <div class="panel-heading"><h3>Explore the Blockchain</h3></div>
         <div class="panel-body">
-            <table class="table table-striped" style="table-layout:fixed">
+            <table class="table table-striped">
                 <thead>
                 <tr>
                     <th>Height</th>
@@ -14,11 +14,11 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="block in blocks | orderBy:'-height'">
-                    <td style="word-wrap:break-word">{{block.height}}</td>
-                    <td style="word-wrap:break-word">{{block.previous_block_hash}}</td>
-                    <td style="word-wrap:break-word">{{block.merkle_root}}</td>
-                    <td style="word-wrap:break-word">{{block.timestamp}}</td>
-                    <td style="word-wrap:break-word">
+                    <td class="word-wrap">{{block.height}}</td>
+                    <td class="word-wrap">{{block.previous_block_hash}}</td>
+                    <td class="word-wrap">{{block.merkle_root}}</td>
+                    <td class="word-wrap">{{block.timestamp}}</td>
+                    <td class="word-wrap">
                         <button ng-click="saveTempDetails(block.transaction)"
                                 data-toggle="modal" data-target="#details"
                                 type="button" class="btn btn-default btn-sm">
@@ -28,7 +28,7 @@
                 </tbody>
             </table>
             <!-- Show Transaction Details -->
-            <div class="modal fade" id="details" role="dialog" style="margin-top:10%">
+            <div class="modal fade" id="details" role="dialog">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -36,7 +36,7 @@
                         </div>
                         <div class="modal-body">
                             <div class="panel-body">
-                                <table class="table table-striped" style="table-layout:fixed">
+                                <table class="table table-striped">
                                     <thead>
                                     <tr>
                                         <th>Sender</th>
@@ -48,19 +48,19 @@
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td style="word-wrap:break-word">
+                                        <td class="word-wrap">
                                             {{details.sender_public_key}}
                                         </td>
-                                        <td style="word-wrap:break-word">
+                                        <td class="word-wrap">
                                             {{details.receiver_public_key}}
                                         </td>
-                                        <td style="word-wrap:break-word">
+                                        <td class="word-wrap">
                                             {{details.signature}}
                                         </td>
-                                        <td style="word-wrap:break-word">
+                                        <td class="word-wrap">
                                             {{details.timestamp}}
                                         </td>
-                                        <td style="word-wrap:break-word">
+                                        <td class="word-wrap">
                                             {{
                                                 details.data.iv +
                                                 details.data.ephem_public_key +
