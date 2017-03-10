@@ -1,0 +1,20 @@
+<div class="container" id="keygen">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="modal-title"><span class="glyphicon glyphicon-download-alt"></span> Generate Key Pair</h4>
+            <br />
+            <span class="text-muted">Download key pair to your file system</span>
+        </div>
+        <div class="panel-body">
+            <div class="alert alert-warning" role="alert">
+                <h3>Disclaimer</h3> A new key pair will be generated to your file system. This is your duty to keep your private key safe. Blockchain Explorer is not responsible for loss of generated keys by any means.
+            </div>
+            <div class="alert alert-info" role="alert">
+                Alternatively, you can sign up to our system to store your public key only.
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button ng-click="downloadKeys()" type="button" class="btn btn-default" data-dismiss="modal">Generate</button>
+        </div>
+    </div>
+</div>

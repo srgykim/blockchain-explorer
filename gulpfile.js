@@ -25,6 +25,7 @@ gulp.task('watch-scss',function(){
 gulp.task('scssconcat', function() {
   return gulp.src(['./public/scss/variables.scss',
   								 '!./public/scss/style.scss',
+                   './public/scss/base.scss',
                    './public/scss/!(variables)*.scss'])
     .pipe(concat('style.scss'))
     .pipe(gulp.dest('./public/scss/'));

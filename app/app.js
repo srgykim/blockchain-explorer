@@ -15,23 +15,73 @@ app.config(function($stateProvider, $urlRouterProvider) {
                 templateUrl: '/templates/navbar.html',
                 controller: 'mainCtrl'
             },
-            main: {
-                templateUrl: '/templates/main.html',
+            home: {
+                templateUrl: '/templates/home.html',
+                controller: 'mainCtrl'
+            }
+        }
+    };
+
+    var keygenState = {
+        name: 'keygen',
+        url: '/keygen',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            keygen: {
+                templateUrl: '/templates/keygen.html',
+                controller: 'mainCtrl'
+            }
+        }
+    };
+
+    var sendState = {
+        name: 'send',
+        url: '/send',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            send: {
+                templateUrl: '/templates/send.html',
+                controller: 'mainCtrl'
+            }
+
+        }
+    };
+
+
+    var exploreState = {
+        name: 'explore',
+        url: '/explore',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            explore: {
+                templateUrl: '/templates/explore.html',
                 controller: 'mainCtrl'
             },
             block: {
                 templateUrl: '/templates/block.html',
                 controller: 'blockCtrl'
             }
+
         }
     };
+
+
 
     var signupState = {
         name: 'signup',
         url: '/signup',
         views: {
             navbar: {
-                templateUrl: '/templates/navbar.html',
+                templateUrl: '/templates/navbar-alt.html',
                 controller: 'mainCtrl'
             },
             signup: {
@@ -47,7 +97,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
         url: '/signin',
         views: {
             navbar: {
-                templateUrl: '/templates/navbar.html',
+                templateUrl: '/templates/navbar-alt.html',
                 controller: 'mainCtrl'
             },
             signin: {
@@ -57,7 +107,30 @@ app.config(function($stateProvider, $urlRouterProvider) {
         }
     };
 
+
+    // var homeState = {
+    //     name: 'home',
+    //     url: '/',
+    //     views: {
+    //         navbar: {
+    //             templateUrl: '/templates/navbar.html',
+    //             controller: 'mainCtrl'
+    //         },
+    //         main: {
+    //             templateUrl: '/templates/main.html',
+    //             controller: 'mainCtrl'
+    //         },
+    //         block: {
+    //             templateUrl: '/templates/block.html',
+    //             controller: 'blockCtrl'
+    //         }
+    //     }
+    // };
+
     $stateProvider.state(homeState);
+    $stateProvider.state(sendState);
+    $stateProvider.state(exploreState);
+    $stateProvider.state(keygenState);
     $stateProvider.state(signupState);
     $stateProvider.state(signinState);
 

@@ -1,0 +1,171 @@
+html,body {
+	height: 100%;
+	font-family: 'Roboto', sans-serif;
+	background-color: $c-darkgray;
+	margin: 0;
+	padding: 0;
+}
+
+.jumbotron {
+	position: relative;
+	background-color: transparent;
+	min-height: 540px;
+	margin: 0;
+	z-index: 1;
+}
+
+
+.jumbotron .bg-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: inherit;
+	z-index: -2;
+	overflow: hidden;
+}
+
+.jumbotron .transparent-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: inherit;
+
+	z-index: -1;
+}
+
+.jumbotron .container {
+	display: block;
+	color: #fff;
+	z-index: 0;
+	transition: 0.3s;
+}
+
+.jumbotronFade .container {
+	opacity: 0.25;
+	transition: 0.3s;
+}
+
+
+.text-muted {
+    color: $c-lightgray;
+}
+
+.text-alert {
+    color: $c-red;
+}
+
+.text-label {
+	color: $c-gray;
+	font-size:8pt;
+}
+
+.modal-success {
+    color: $c-green;
+    font-size:55px;
+}
+.modal-fail {
+    color: $c-red;
+    font-size:55px;
+}
+
+textarea {
+	resize: none;
+}
+
+.word-wrap{
+    word-wrap: break-word;
+}
+
+table {
+    table-layout:fixed;
+    background-color: #fff !important;
+    button {
+    	margin: 10px;
+    }
+}
+
+.validation-message {
+    color: $c-red;
+    font-size: 10pt;
+}
+
+#keygen .panel {
+	margin-top:23vh;
+}
+
+#sendPanel .panel, #explorePanel .panel {
+	margin-top:15vh;
+	margin-bottom: 7%;
+}
+
+.btn-share {
+	margin-bottom: 20px;
+}
+
+.table-header-margin {
+	margin: 10px 0;
+}
+
+
+
+
+
+
+
+
+// #sendModal textarea {
+//     resize: none;
+// }
+
+// #myModal, #decrypted, #verified, #details {
+//     margin-top: 10%;
+// }
+
+// #receiveModal .modal-body h4 {
+//     margin: 0;
+// }
+
+// .panel-primary .panel-heading {
+//     background-color: $c-primaryblue;
+// }
+
+
+
+// h1.title {
+//     font-size: 4.5rem;
+// }
+
+// .form-group {
+//     margin-bottom: 15px;
+// }
+
+// label {
+//     margin-bottom: 15px;
+// }
+
+// input,
+// input::-webkit-input-placeholder {
+//     font-size: 11px;
+//     padding-top: 3px;
+// }
+
+
+
+// .my-panel {
+//     padding-top: 2%;
+//     padding-left: 5%;
+//     padding-right: 5%;
+// }
+
+// a.signout-button:hover {
+//     background-color: transparent;
+// }
+
+
+

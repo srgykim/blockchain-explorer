@@ -1,0 +1,157 @@
+<div class="container" id="explorePanel">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="modal-title"><span class="glyphicon glyphicon-tasks"></span> Explorer</h4>
+            <br />
+            <span class="text-muted">View the blocks relevant to your public key</span>
+        </div>
+        <div class="panel-body">
+            <!-- Share -->
+            <button ng-click="requestUserInfo()" ng-show="isSignedIn" type="button" class="btn btn-default btn-sm btn-share" data-toggle="modal" data-target="#receiveModal">
+                <span class="glyphicon glyphicon-share"></span> Share
+            </button>
+            <div class="modal fade" id="receiveModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title"><span class="glyphicon glyphicon-share"></span>Share</h4>
+                            <br />
+                            <span class="text-muted">Instantly receive secure data from any address</span>
+                        </div>
+                        <div class="modal-body">
+                            <span style="font-size:12pt;font-weight:bold">Copy and share:</span>
+                            <br />
+                            <div class="alert alert-info" role="alert" class="word-wrap">
+                                <span class="glyphicon glyphicon-copy"></span> {{user.username}}
+                            </div>
+                            Copy and share your username with your sender via email, text, etc.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="publicKey">Enter your private key:</label>
+                <input ng-blur="validatePriv(privateKey)" ng-model="privateKey" type="text" class="form-control" id="privateKey">
+                <span class="text-alert">{{invalidPriv}}</span>
+            </div>
+            <div class="form-group" ng-show="!isSignedIn">
+                <label for="publicKey">Enter your public key:</label>
+                <input ng-blur="validatePub(publicKey)" ng-model="publicKey" type="text" class="form-control" id="publicKey">
+                <span class="text-alert">{{invalidPub}}</span>
+            </div>
+            <div align="right">
+                <button ng-show="!hidetxs" ng-click="getTransactions()" type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-eye-open"></span> Show Transactions
+                </button>
+            </div>
+            <div align="right">
+                <button ng-click="hideTransactions()" ng-show="hidetxs" type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-eye-close"></span> Hide Transactions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <table ng-show="hidetxs" class="table table-bordered">
+        <thead>
+            <tr>
+                <th><div class="table-header-margin">From</div></th>
+                <th><div class="table-header-margin">Signature</div></th>
+                <th><div class="table-header-margin">Timestamp</div></th>
+                <th><div class="table-header-margin">Data</div></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="tx in txs">
+                <td class="word-wrap">{{tx.sender_public_key}}</td>
+                <td class="word-wrap">
+                    {{tx.signature}}
+                    <br />
+                    <div align="right">
+                        <button ng-disabled="invalidPrivateKey" ng-click="verifyTransaction(tx)" data-toggle="modal" data-target="#verified" type="button" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-ok"></span> Verify
+                        </button>
+                    </div>
+                </td>
+                <td class="word-wrap">{{tx.timestamp}}</td>
+                <td class="word-wrap">
+                    {{tx.data.iv + tx.data.ephem_public_key + tx.data.ciphertext + tx.data.mac}}
+                    <br />
+                    <div align="right">
+                        <button ng-disabled="invalidPrivateKey && invalidPublicKey" ng-click="decryptData(tx.data)" data-toggle="modal" data-target="#decrypted" type="button" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-lock"></span> Read
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!-- Decrypt -->
+<div class="modal fade" id="decrypted" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span>Decrypted data:</h4>
+                <br />
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info" ng-bind-html="decrypted"></div>
+                <div class="form-group" ng-show="isSignedIn">
+                    <label for="to_u_f">
+                        Forward To:
+                        <br />
+                        <span class="text-label">username</span>
+                    </label>
+                    <input ng-blur="validateTransactionReceiverUsernameForward(txf.receiverUsername)" ng-model="txf.receiverUsername" type="text" class="form-control" id="to_u_f">
+                    <div class="validation-message" ng-bind-html="invalidReceiverForward"></div>
+                    <br />
+                </div>
+                <div class="form-group">
+                    <label for="signature_f">
+                        Signature:
+                        <br />
+                        <span class="text-label">private key</span>
+                    </label>
+                    <input ng-blur="validateTransactionSigningKeyForward(txf.senderPrivateKey)" ng-model="txf.senderPrivateKey" ng-model="transaction.receiver" type="text" class="form-control" id="signature_f">
+                    <span class="text-alert">{{invalidSigningKeyForward}}</span>
+                </div>
+                <div align="center">
+                    <button ng-click="forward()" data-toggle="modal" data-target="#myModal" ng-disabled="invalidRecForward || invalidSignForward" type="button" class="btn btn-default" data-dismiss="modal">
+                        Forward
+                        <span class="glyphicon glyphicon-arrow-right"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Verify -->
+<div class="modal fade" id="verified" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="modal-success" ng-show="verified && !invalidPrivateKey" align="center">
+                    <span class="glyphicon glyphicon-ok"></span> Valid Signature
+                </div>
+                <div class="modal-fail" ng-show="!verified && !invalidPrivateKey" align="center">
+                    <span class="glyphicon glyphicon-remove"></span> Invalid Signature
+                </div>
+                <div class="modal-fail" ng-show="invalidPrivateKey" align="center">
+                    <span class="glyphicon glyphicon-remove-sign"></span> Unable to verify the transaction: bad private key.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

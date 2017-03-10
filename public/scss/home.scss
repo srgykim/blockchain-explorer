@@ -1,0 +1,71 @@
+.jumbotron#index_jumbo {
+	height: 100vh;
+}
+
+
+.jumbotron#index_jumbo .transparent-layer {
+	background: rgba(0, 0, 0, 0.6);
+	background: -moz-linear-gradient(left, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%);
+	background: -webkit-gradient(left top, right top, color-stop(0%, rgba(0, 0, 0, 0.6)), color-stop(100%, rgba(0, 0, 0, 0.6)));
+	background: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%);
+	background: -o-linear-gradient(left, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%);
+	background: -ms-linear-gradient(left, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%);
+	background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=1 );
+
+}
+
+.jumbotron#index_jumbo .container {
+	margin-top: 12em;
+	h1 {
+		text-align: center;
+		// opacity: 0;
+	}
+	p {
+		text-align: center;
+	}
+
+}
+
+.underheader_text {
+	// opacity: 0;
+}
+
+.jumbotron#index_jumbo .container p{
+	margin-top: 3em;
+}
+
+
+.jumbotron#index_jumbo .bg-layer {
+	background: url("../img/header-bg.jpg");
+	background-size: cover;
+	filter: blur(2px) brightness(0.9) contrast(110%);
+}
+
+.jumbotron#index_jumbo a:hover,a:visited,a:active,a:link{
+    text-decoration: none;
+}
+
+
+.jumbotron#index_jumbo  p {
+	text-align: justify;
+
+	@media (max-width: 667px) {
+		width: 450px;
+	}
+	@media (max-width: 470px) {
+		width: 350px;
+	}
+	@media (max-width: 370px) {
+		width: 275px;
+	}
+}
+
+
+@media (min-width: 1200px) {
+	.jumbotron#index_jumbo .container {
+		width: 1000px !important;
+	}
+}
+
+
