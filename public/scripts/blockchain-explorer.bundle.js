@@ -16949,25 +16949,6 @@ app.config(function($stateProvider, $urlRouterProvider) {
     };
 
 
-    // var homeState = {
-    //     name: 'home',
-    //     url: '/',
-    //     views: {
-    //         navbar: {
-    //             templateUrl: '/templates/navbar.html',
-    //             controller: 'mainCtrl'
-    //         },
-    //         main: {
-    //             templateUrl: '/templates/main.html',
-    //             controller: 'mainCtrl'
-    //         },
-    //         block: {
-    //             templateUrl: '/templates/block.html',
-    //             controller: 'blockCtrl'
-    //         }
-    //     }
-    // };
-
     $stateProvider.state(homeState);
     $stateProvider.state(sendState);
     $stateProvider.state(exploreState);

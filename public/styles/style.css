@@ -53,6 +53,10 @@ html, body {
   color: #777777;
   font-size: 8pt; }
 
+.text-emphasize {
+  font-size: 12pt;
+  font-weight: bold; }
+
 .modal-success {
   color: #006B00;
   font-size: 55px; }

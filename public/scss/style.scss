@@ -80,6 +80,10 @@ html,body {
 	color: $c-gray;
 	font-size:8pt;
 }
+.text-emphasize {
+	font-size:12pt;
+	font-weight:bold;
+}
 
 .modal-success {
     color: $c-green;
@@ -127,62 +131,6 @@ table {
 .table-header-margin {
 	margin: 10px 0;
 }
-
-
-
-
-
-
-
-
-// #sendModal textarea {
-//     resize: none;
-// }
-
-// #myModal, #decrypted, #verified, #details {
-//     margin-top: 10%;
-// }
-
-// #receiveModal .modal-body h4 {
-//     margin: 0;
-// }
-
-// .panel-primary .panel-heading {
-//     background-color: $c-primaryblue;
-// }
-
-
-
-// h1.title {
-//     font-size: 4.5rem;
-// }
-
-// .form-group {
-//     margin-bottom: 15px;
-// }
-
-// label {
-//     margin-bottom: 15px;
-// }
-
-// input,
-// input::-webkit-input-placeholder {
-//     font-size: 11px;
-//     padding-top: 3px;
-// }
-
-
-
-// .my-panel {
-//     padding-top: 2%;
-//     padding-left: 5%;
-//     padding-right: 5%;
-// }
-
-// a.signout-button:hover {
-//     background-color: transparent;
-// }
-
 
 
 
@@ -255,7 +203,6 @@ table {
 		width: 1000px !important;
 	}
 }
-
 
 
 
