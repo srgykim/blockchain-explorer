@@ -24,6 +24,7 @@ function MainCtrl($scope, $rootScope, $window,
     $scope.requestUserInfo = function() {
         $scope.user = {};
         $scope.user.username = $window.localStorage.username;
+        $scope.user.first_name = $window.localStorage.first_name;
     };
 
     $scope.validatePub = function(pub) {
@@ -168,6 +169,17 @@ function MainCtrl($scope, $rootScope, $window,
                 $scope.transactionStatusMessage = message;
             }
         });
+    };
+
+    $scope.getUserInfo = function(authenticated) {
+        if ($window.localStorage.username) {
+                mainService.getUserInfo($window.localStorage.username, $rootScope.isSignedIn,
+                    function(success, user_info) {
+                        $scope.user_info = user_info;
+                        $scope.username2 = "vitalya"
+                    });
+
+        }
     };
 }
 
