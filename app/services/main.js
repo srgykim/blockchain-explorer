@@ -6,6 +6,29 @@ function MainService($http, $window) {
         $window.open('/api/generate');
     };
 
+    this.getUserInfo = function(parameter, authenticated, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'POST',
+                url: '/api/user_info/' + parameter,
+                data: {
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.user_info)
+                } else {
+                    callback(false, response.data.user_info);
+                }
+            });
+    };
+
     this.signEncryptSend = function(tx, callback) {
         var settings = {};
         if ($window.localStorage.token) {

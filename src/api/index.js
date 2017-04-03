@@ -36,8 +36,8 @@ router.post("/users", function(req, res) {
                     error: "User already exists"
                 })
             } else {
-                var userInsertQuery = "INSERT INTO user (username, password, public_key) VALUES (?, ?, ?)";
-                return client.execute(userInsertQuery, [user.username, user.password, user.publicKey]);
+                var userInsertQuery = "INSERT INTO user (username, first_name, last_name, organization, password, public_key) VALUES (?, ?, ?, ?, ?, ?)";
+                return client.execute(userInsertQuery, [user.username, user.first_name, user.last_name, user.organization, user.password, user.publicKey]);
             }
         })
         .then(function(result) {
@@ -70,6 +70,44 @@ router.post("/users", function(req, res) {
                 error: err.message
             });
         });
+});
+
+
+
+// get user private information
+router.post("/user_info/:username", function(req, res) {
+    var output = [];
+    var user_info = null;
+    var token = req.headers.authorization;
+
+    if (req.params.username) {
+        jwt.verify(token, config.auth.secret, function(err, decoded) {
+            if (err) {
+                res.json({
+                    success: false,
+                    message: "Invalid token"
+                });
+            }
+            var pubKeyQuery = "SELECT username, first_name, last_name, organization FROM user WHERE username = ?";
+            client.execute(pubKeyQuery, [req.params.username])
+                .then(function(result) {
+                    output = result.rows[0];
+
+                    if (result.length == 0) {
+                        res.json({
+                            publicKey: output.public_key,
+                            success: false,
+                            message: "No transactions found"
+                        });
+                    } else {
+                        res.json({
+                            success: true,
+                            user_info: output
+                        });
+                    }
+                });
+        });
+    }
 });
 
 // download key pair of registered user
@@ -419,6 +457,42 @@ router.post("/transactions/:username", function(req, res) {
         });
     }
 });
+
+
+// get all transactions
+router.post("/transactions", function(req, res) {
+    var txs = [];
+    var publicKey = null;
+    var token = req.headers.authorization;
+    var txsQuery = "SELECT transaction FROM block";
+
+
+
+    console.log("22222")
+    publicKey = req.body.publicKey;
+    client.execute(txsQuery)
+    .then(function(result) {
+        result.rows.forEach(function(row) {
+            if (row.transaction.receiver_public_key === publicKey) {
+                txs.push(row.transaction);
+            }
+        });
+        if (txs.length === 0) {
+            res.json({
+                success: false,
+                message: "No transactions found"
+            });
+        } else {
+            res.json({
+                success: true,
+                txs: txs
+            });
+        }
+    });
+});
+
+
+
 
 router.post("/decrypt", function(req, res) {
     var data = req.body.data;

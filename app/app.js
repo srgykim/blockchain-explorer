@@ -74,6 +74,21 @@ app.config(function($stateProvider, $urlRouterProvider) {
         }
     };
 
+    var accountState = {
+        name: 'account',
+        url: '/account',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            home: {
+                templateUrl: '/templates/account.html',
+                controller: 'mainCtrl'
+            }
+        }
+    };
+
 
 
     var signupState = {
@@ -112,6 +127,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     $stateProvider.state(sendState);
     $stateProvider.state(exploreState);
     $stateProvider.state(keygenState);
+    $stateProvider.state(accountState);
     $stateProvider.state(signupState);
     $stateProvider.state(signinState);
 

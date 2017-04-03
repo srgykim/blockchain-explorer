@@ -38,7 +38,7 @@ function SignupCtrl($scope, $rootScope, $window, $interval,
                 $scope.errorMessage = "";
                 $window.location.href = "/#!/";
             } else {
-                $scope.errorMessage = "This username is already registered.";
+                $scope.errorMessage = "This username is already exist.";
             }
         });
     };

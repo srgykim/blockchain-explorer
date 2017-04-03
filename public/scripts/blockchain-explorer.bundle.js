@@ -4814,6 +4814,7 @@ function MainCtrl($scope, $rootScope, $window,
     $scope.requestUserInfo = function() {
         $scope.user = {};
         $scope.user.username = $window.localStorage.username;
+        $scope.user.first_name = $window.localStorage.first_name;
     };
 
     $scope.validatePub = function(pub) {
@@ -4959,6 +4960,17 @@ function MainCtrl($scope, $rootScope, $window,
             }
         });
     };
+
+    $scope.getUserInfo = function(authenticated) {
+        if ($window.localStorage.username) {
+                mainService.getUserInfo($window.localStorage.username, $rootScope.isSignedIn,
+                    function(success, user_info) {
+                        $scope.user_info = user_info;
+                        $scope.username2 = "vitalya"
+                    });
+
+        }
+    };
 }
 
 module.exports = MainCtrl;
@@ -5045,7 +5057,7 @@ function SignupCtrl($scope, $rootScope, $window, $interval,
                 $scope.errorMessage = "";
                 $window.location.href = "/#!/";
             } else {
-                $scope.errorMessage = "This username is already registered.";
+                $scope.errorMessage = "This username is already exist.";
             }
         });
     };
@@ -5142,6 +5154,29 @@ function MainService($http, $window) {
 
     this.downloadKeys = function() {
         $window.open('/api/generate');
+    };
+
+    this.getUserInfo = function(parameter, authenticated, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'POST',
+                url: '/api/user_info/' + parameter,
+                data: {
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.user_info)
+                } else {
+                    callback(false, response.data.user_info);
+                }
+            });
     };
 
     this.signEncryptSend = function(tx, callback) {
@@ -16915,6 +16950,21 @@ app.config(function($stateProvider, $urlRouterProvider) {
         }
     };
 
+    var accountState = {
+        name: 'account',
+        url: '/account',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            home: {
+                templateUrl: '/templates/account.html',
+                controller: 'mainCtrl'
+            }
+        }
+    };
+
 
 
     var signupState = {
@@ -16953,6 +17003,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     $stateProvider.state(sendState);
     $stateProvider.state(exploreState);
     $stateProvider.state(keygenState);
+    $stateProvider.state(accountState);
     $stateProvider.state(signupState);
     $stateProvider.state(signinState);
 

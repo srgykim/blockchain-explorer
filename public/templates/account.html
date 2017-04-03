@@ -1,8 +1,8 @@
-<div class="container" ng-init="redirectIfSignedIn();canSignUp();">
+<div class="container" ng-init="redirectIfSignedIn();canSignUp();getUserInfo();">
     <div class="row main">
         <div class="panel-heading">
             <div class="panel-title text-center">
-                <h1 class="title">Create your Account</h1>
+                <h1 class="title">Personal Account</h1>
             </div>
         </div>
         <div class="main-login main-center">
@@ -12,7 +12,7 @@
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                            <input ng-model="user.first_name" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                            <input ng-model="user_info.first_name" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
                         </div>
                         <div class="validation-message" ng-bind-html="incorrectUsername"></div>
                     </div>
@@ -22,7 +22,7 @@
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                            <input ng-model="user.last_name" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                            <input ng-model="user_info.last_name" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
                         </div>
                         <div class="validation-message" ng-bind-html="incorrectUsername"></div>
                     </div>
@@ -31,8 +31,8 @@
                     <label for="organization" class="cols-sm-2 control-label">Organization</label>
                     <div class="cols-sm-10">
                         <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                            <input ng-model="user.organization" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+                            <input ng-model="user_info.organization" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
                         </div>
                         <div class="validation-message" ng-bind-html="incorrectUsername"></div>
                     </div>
@@ -44,7 +44,7 @@
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
-                            <input ng-model="user.username" ng-blur="validateUsername(user.username)" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                            <input ng-model="user_info.username" ng-blur="validateUsername(user.username)" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
                         </div>
                         <div class="validation-message" ng-bind-html="incorrectUsername"></div>
                     </div>
@@ -54,7 +54,7 @@
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
-                            <input ng-model="user.password" ng-blur="validatePassword(user.password)" type="password" class="form-control" name="password" id="password" placeholder="Enter your Password" />
+                            <input ng-model="user_info.password" ng-blur="validatePassword(user.password)" type="password" class="form-control" name="password" id="password" placeholder="Enter your Password" />
                         </div>
                     </div>
                     <div class="validation-message" ng-bind-html="incorrectPassword"></div>
@@ -64,45 +64,16 @@
                     <div class="cols-sm-10">
                         <div class="input-group">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
-                            <input ng-model="user.confirmation" ng-blur="confirmPassword(user.password, user.confirmation)" type="password" class="form-control" name="confirm" id="confirm" placeholder="Confirm your Password" />
+                            <input ng-model="user_info.confirmation" ng-blur="confirmPassword(user.password, user.confirmation)" type="password" class="form-control" name="confirm" id="confirm" placeholder="Confirm your Password" />
                         </div>
                     </div>
                     <div class="validation-message">{{passwordsDoNotMatch}}</div>
                 </div>
                 <div class="form-group">
-                    <button ng-disabled="!canContinue" ng-click="canSignUp()" data-toggle="modal" data-target="#signupModal" type="button" class="btn btn-primary btn-lg btn-block login-button">Continue</button>
-                </div>
-                <div class="login-register">
-                    <a ui-sref="signin">Sign In</a>
+                    <button ng-disabled="!canContinue" ng-click="canSignUp()" data-toggle="modal" data-target="#signupModal" type="button" class="btn btn-primary btn-lg btn-block login-button">Update</button>
                 </div>
                 <div class="validation-message">{{errorMessage}}</div>
             </form>
-            <!-- Signup, generate key pair -->
-            <div class="modal fade" id="signupModal" role="dialog">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Sign Up to Blockchain Explorer</h4>
-                            <br />
-                            <span class="text-muted">Sign up to our system.</span>
-                        </div>
-                        <div class="modal-body">
-                            <div class="alert alert-warning" role="alert">
-                                <h3>Disclaimer</h3> A new key pair will be generated to your file system. This is your duty to keep your private key safe. Blockchain Explorer is not responsible for loss of generated keys by any means.
-                            </div>
-                            <div class="alert alert-info" role="alert">
-                                <h3>Note:</h3>
-                                <b>TO DOWNLOAD THE KEYS POP-UP MUST BE ENABLED!</b>
-                                <br /> Your username will serve as an alias to your public key. Share it with other Blockchain Explorer members to get secure data.
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button ng-click="createUser(user)" type="button" class="btn btn-default" data-dismiss="modal">Sign Up</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>

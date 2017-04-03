@@ -29,7 +29,10 @@ CREATE TABLE block (
 CREATE TABLE user (
     username text PRIMARY KEY,
     password text,
-    public_key text
+    public_key text,
+    first_name text,
+    last_name text,
+    organization text
 );
 
 INSERT INTO block (height, previous_block_hash, merkle_root, timestamp, transaction)
@@ -52,3 +55,9 @@ VALUES (0, 'c9e57582bf59e6abe23438c08ea9a3690c26a846f507c4660612ebb3dc39bbd6',
 
 SELECT JSON * FROM block;
 SELECT JSON * FROM user;
+
+
+
+ALTER TABLE user ADD first_name text;
+ALTER TABLE user ADD last_name text;
+ALTER TABLE user ADD organization text;
