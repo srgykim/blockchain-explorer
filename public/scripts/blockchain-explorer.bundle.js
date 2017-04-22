@@ -4814,7 +4814,6 @@ function MainCtrl($scope, $rootScope, $window,
     $scope.requestUserInfo = function() {
         $scope.user = {};
         $scope.user.username = $window.localStorage.username;
-        $scope.user.first_name = $window.localStorage.first_name;
     };
 
     $scope.validatePub = function(pub) {
@@ -4861,6 +4860,10 @@ function MainCtrl($scope, $rootScope, $window,
         $rootScope.isSignedIn = $window.localStorage.length !== 0;
     };
 
+    $scope.initAdminState = function() {
+        $rootScope.isAdmin = $window.localStorage.isAdmin;
+    };
+
     $scope.getTransactions = function(authenticated) {
         if ($window.localStorage.username) {
             if ($scope.invalidPriv === "") {
@@ -4880,6 +4883,17 @@ function MainCtrl($scope, $rootScope, $window,
             }
         }
     };
+
+    $scope.getTransactions_for_account = function(authenticated) {
+        if ($window.localStorage.username) {
+            mainService.getTransactions($window.localStorage.username, $rootScope.isSignedIn,
+                function(success, txs) {
+                    $scope.txs = txs;
+                    $scope.hidetxs = true;
+                });
+        }
+    };
+
 
     $scope.hideTransactions = function() {
         $scope.hidetxs = false;
@@ -4908,7 +4922,7 @@ function MainCtrl($scope, $rootScope, $window,
 
     $scope.signOut = function() {
         $window.localStorage.clear();
-        $window.location.reload();
+        $window.location.href = "/#!/";
     };
 
     $scope.downloadKeys = function() {
@@ -4966,7 +4980,16 @@ function MainCtrl($scope, $rootScope, $window,
                 mainService.getUserInfo($window.localStorage.username, $rootScope.isSignedIn,
                     function(success, user_info) {
                         $scope.user_info = user_info;
-                        $scope.username2 = "vitalya"
+                    });
+
+        }
+    };
+
+    $scope.getUsersList = function(authenticated) {
+        if ($window.localStorage.username == "admin") {
+                mainService.getUsersList($window.localStorage.username, $rootScope.isSignedIn,
+                    function(success, users) {
+                        $scope.users = users;
                     });
 
         }
@@ -4997,9 +5020,12 @@ function SigninCtrl($scope, $rootScope, $window,
     };
 
     $scope.authenticateUser = function(user) {
-        signinService.authentcateUser(user, function(success) {
+        signinService.authentcateUser(user, function(success, isAdmin) {
             if (success) {
                 $window.localStorage.isSignedIn = true;
+                if (isAdmin) {
+                    $window.localStorage.isAdmin = true;
+                }
                 $scope.errorMessage = "";
                 $window.location.href = "/#!/";
             } else {
@@ -5174,7 +5200,31 @@ function MainService($http, $window) {
                 if (response.data.success) {
                     callback(true, response.data.user_info)
                 } else {
-                    callback(false, response.data.user_info);
+                    callback(false, response.data.message);
+                }
+            });
+    };
+
+
+    this.getUsersList = function(parameter, authenticated, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'POST',
+                url: '/api/users_list/' + parameter,
+                data: {
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.users)
+                } else {
+                    callback(false, response.data.message);
                 }
             });
     };
@@ -5327,6 +5377,9 @@ function SigninService($http, $window) {
             .then(function(response) {
                 $window.localStorage.token = response.data.token;
                 $window.localStorage.username = user.username;
+                if(user.username == "admin"){
+                    callback(true, true);
+                }
                 callback(true);
             })
             .catch(function(err) {

@@ -24,7 +24,31 @@ function MainService($http, $window) {
                 if (response.data.success) {
                     callback(true, response.data.user_info)
                 } else {
-                    callback(false, response.data.user_info);
+                    callback(false, response.data.message);
+                }
+            });
+    };
+
+
+    this.getUsersList = function(parameter, authenticated, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'POST',
+                url: '/api/users_list/' + parameter,
+                data: {
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.users)
+                } else {
+                    callback(false, response.data.message);
                 }
             });
     };

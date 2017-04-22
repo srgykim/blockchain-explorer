@@ -97,6 +97,45 @@ router.post("/user_info/:username", function(req, res) {
                         res.json({
                             publicKey: output.public_key,
                             success: false,
+                            message: "Error no such username"
+                        });
+                    } else {
+                        res.json({
+                            success: true,
+                            user_info: output
+                        });
+                    }
+                });
+        });
+    }
+});
+
+// TODO:
+// change user private information
+router.put("/user_info/:username", function(req, res) {
+
+    console.log("UPDATE");
+    var output = [];
+    var user_info = null;
+    var token = req.headers.authorization;
+
+    if (req.params.username) {
+        jwt.verify(token, config.auth.secret, function(err, decoded) {
+            if (err) {
+                res.json({
+                    success: false,
+                    message: "Invalid token"
+                });
+            }
+            var pubKeyQuery = "UPDATE user Set username = ?, first_name = ?, last_name = ?, organization = ? WHERE username = ?";
+            client.execute(pubKeyQuery, [req.params.username])
+                .then(function(result) {
+                    output = result.rows[0];
+
+                    if (result.length == 0) {
+                        res.json({
+                            publicKey: output.public_key,
+                            success: false,
                             message: "No transactions found"
                         });
                     } else {
@@ -109,6 +148,8 @@ router.post("/user_info/:username", function(req, res) {
         });
     }
 });
+
+
 
 // download key pair of registered user
 router.get("/users/keys", function(req, res) {
@@ -466,9 +507,6 @@ router.post("/transactions", function(req, res) {
     var token = req.headers.authorization;
     var txsQuery = "SELECT transaction FROM block";
 
-
-
-    console.log("22222")
     publicKey = req.body.publicKey;
     client.execute(txsQuery)
     .then(function(result) {
@@ -559,6 +597,43 @@ router.post("/verify", function(req, res) {
             });
         });
 });
+
+
+// get all transactions
+router.post("/users_list/:username", function(req, res) {
+    var users = [];
+    var token = req.headers.authorization;
+
+    if (req.params.username == "admin") {
+        jwt.verify(token, config.auth.secret, function(err, decoded) {
+            if (err) {
+                res.json({
+                    success: false,
+                    message: "Invalid token"
+                });
+            }
+            var pubKeyQuery = "SELECT username, first_name, last_name, organization FROM user";
+            client.execute(pubKeyQuery)
+                .then(function(result) {
+                    users = result.rows;
+                    if (users.length === 0) {
+                        res.json({
+                            success: false,
+                            message: "Something went wrong during receiving of userslist"
+                        });
+                    } else {
+                        res.json({
+                            success: true,
+                            users: users
+                        });
+                    }
+                });
+        });
+    }
+});
+
+
+
 
 // generate a new key pair
 router.get("/generate", function(req, res) {

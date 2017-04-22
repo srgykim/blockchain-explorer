@@ -124,6 +124,11 @@ table {
 	margin-bottom: 7%;
 }
 
+#accountPanel .panel {
+	margin-top:50px;
+}
+
+
 .btn-share {
 	margin-bottom: 20px;
 }
@@ -287,6 +292,23 @@ table {
 .alt-navbar {
 	background-color: $c-alt-navbar !important;
 	min-height: 40px !important;
+}
+
+.personal-message {
+	height: 50px;
+    line-height: 50px;
+    text-align: center;
+
+	p {
+		color: $c-milkwhite;
+		display: inline-block;
+		vertical-align: middle;
+		line-height: normal;
+	}
+	span {
+		color: $c-milkwhite;
+		font-weight: bold;
+	}
 }
 
 

@@ -81,6 +81,23 @@
 	min-height: 40px !important;
 }
 
+.personal-message {
+	height: 50px;
+    line-height: 50px;
+    text-align: center;
+
+	p {
+		color: $c-milkwhite;
+		display: inline-block;
+		vertical-align: middle;
+		line-height: normal;
+	}
+	span {
+		color: $c-milkwhite;
+		font-weight: bold;
+	}
+}
+
 
 // Changed default Twitter Bootstrap classes to change collapse width
 @media (max-width: 867px) {

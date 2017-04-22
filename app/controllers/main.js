@@ -24,7 +24,6 @@ function MainCtrl($scope, $rootScope, $window,
     $scope.requestUserInfo = function() {
         $scope.user = {};
         $scope.user.username = $window.localStorage.username;
-        $scope.user.first_name = $window.localStorage.first_name;
     };
 
     $scope.validatePub = function(pub) {
@@ -71,6 +70,10 @@ function MainCtrl($scope, $rootScope, $window,
         $rootScope.isSignedIn = $window.localStorage.length !== 0;
     };
 
+    $scope.initAdminState = function() {
+        $rootScope.isAdmin = $window.localStorage.isAdmin;
+    };
+
     $scope.getTransactions = function(authenticated) {
         if ($window.localStorage.username) {
             if ($scope.invalidPriv === "") {
@@ -90,6 +93,17 @@ function MainCtrl($scope, $rootScope, $window,
             }
         }
     };
+
+    $scope.getTransactions_for_account = function(authenticated) {
+        if ($window.localStorage.username) {
+            mainService.getTransactions($window.localStorage.username, $rootScope.isSignedIn,
+                function(success, txs) {
+                    $scope.txs = txs;
+                    $scope.hidetxs = true;
+                });
+        }
+    };
+
 
     $scope.hideTransactions = function() {
         $scope.hidetxs = false;
@@ -118,7 +132,7 @@ function MainCtrl($scope, $rootScope, $window,
 
     $scope.signOut = function() {
         $window.localStorage.clear();
-        $window.location.reload();
+        $window.location.href = "/#!/";
     };
 
     $scope.downloadKeys = function() {
@@ -176,7 +190,16 @@ function MainCtrl($scope, $rootScope, $window,
                 mainService.getUserInfo($window.localStorage.username, $rootScope.isSignedIn,
                     function(success, user_info) {
                         $scope.user_info = user_info;
-                        $scope.username2 = "vitalya"
+                    });
+
+        }
+    };
+
+    $scope.getUsersList = function(authenticated) {
+        if ($window.localStorage.username == "admin") {
+                mainService.getUsersList($window.localStorage.username, $rootScope.isSignedIn,
+                    function(success, users) {
+                        $scope.users = users;
                     });
 
         }

@@ -7,6 +7,9 @@ function SigninService($http, $window) {
             .then(function(response) {
                 $window.localStorage.token = response.data.token;
                 $window.localStorage.username = user.username;
+                if(user.username == "admin"){
+                    callback(true, true);
+                }
                 callback(true);
             })
             .catch(function(err) {
