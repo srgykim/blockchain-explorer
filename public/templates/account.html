@@ -1,79 +1,75 @@
-<div class="container" ng-init="redirectIfSignedIn();canSignUp();getUserInfo();">
-    <div class="row main">
+<div id="personalInfo" ng-init="redirectIfSignedIn();canSignUp();getUserInfo();">
+    <div class="container">
         <div class="panel-heading">
             <div class="panel-title text-center">
                 <h1 class="title">Personal Account</h1>
+                <h4>{{user_info.username}}</h3>
             </div>
         </div>
-        <div class="main-login main-center">
-            <form class="form-horizontal" method="post" action="#">
-                <div class="form-group">
-                    <label for="first_name" class="cols-sm-2 control-label">First Name</label>
-                    <div class="cols-sm-10">
-                        <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                            <input ng-model="user_info.first_name" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+        <div class="panel-body">
+            <div class="row">
+                <form class="form-horizontal" method="post" action="#">
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label for="first_name" class="control-label">First Name</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                    <input ng-model="user_info.first_name" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                                </div>
+                                <div class="validation-message" ng-bind-html="incorrectUsername"></div>
+                            </div>
                         </div>
-                        <div class="validation-message" ng-bind-html="incorrectUsername"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="lastname" class="cols-sm-2 control-label">Last Name</label>
-                    <div class="cols-sm-10">
-                        <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                            <input ng-model="user_info.last_name" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                        <div class="form-group">
+                            <label for="lastname" class="control-label">Last Name</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                    <input ng-model="user_info.last_name" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                                </div>
+                                <div class="validation-message" ng-bind-html="incorrectUsername"></div>
+                            </div>
                         </div>
-                        <div class="validation-message" ng-bind-html="incorrectUsername"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="organization" class="cols-sm-2 control-label">Organization</label>
-                    <div class="cols-sm-10">
-                        <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
-                            <input ng-model="user_info.organization" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                        <div class="form-group">
+                            <label for="organization" class="control-label">Organization</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
+                                    <input ng-model="user_info.organization" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                                </div>
+                                <div class="validation-message" ng-bind-html="incorrectUsername"></div>
+                            </div>
                         </div>
-                        <div class="validation-message" ng-bind-html="incorrectUsername"></div>
                     </div>
-                </div>
 
-
-                <div class="form-group">
-                    <label for="username" class="cols-sm-2 control-label">Username</label>
-                    <div class="cols-sm-10">
-                        <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                            <input ng-model="user_info.username" ng-blur="validateUsername(user.username)" type="text" class="form-control" name="username" id="username" placeholder="Enter your Username" />
+                    <div class="col-sm-5 col-sm-offset-2">
+                        <div class="form-group">
+                            <label for="password" class="control-label">Password</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                    <input ng-model="user_info.password" ng-blur="validatePassword(user.password)" type="password" class="form-control" name="password" id="password" placeholder="Enter your Password" />
+                                </div>
+                            </div>
+                            <div class="validation-message" ng-bind-html="incorrectPassword"></div>
                         </div>
-                        <div class="validation-message" ng-bind-html="incorrectUsername"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="password" class="cols-sm-2 control-label">Password</label>
-                    <div class="cols-sm-10">
-                        <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
-                            <input ng-model="user_info.password" ng-blur="validatePassword(user.password)" type="password" class="form-control" name="password" id="password" placeholder="Enter your Password" />
+                        <div class="form-group">
+                            <label for="confirm" class="control-label">Confirm Password</label>
+                            <div>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                    <input ng-model="user_info.confirmation" ng-blur="confirmPassword(user.password, user.confirmation)" type="password" class="form-control" name="confirm" id="confirm" placeholder="Confirm your Password" />
+                                </div>
+                            </div>
+                            <div class="validation-message">{{passwordsDoNotMatch}}</div>
                         </div>
-                    </div>
-                    <div class="validation-message" ng-bind-html="incorrectPassword"></div>
-                </div>
-                <div class="form-group">
-                    <label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>
-                    <div class="cols-sm-10">
-                        <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
-                            <input ng-model="user_info.confirmation" ng-blur="confirmPassword(user.password, user.confirmation)" type="password" class="form-control" name="confirm" id="confirm" placeholder="Confirm your Password" />
+                        <div class="form-group" style="margin-top:50px;">
+                            <button ng-click="canSignUp()" data-toggle="modal" data-target="#signupModal" type="button" class="btn btn-primary btn-lg btn-block login-button">Update</button>
                         </div>
+                        <div class="validation-message">{{errorMessage}}</div>
                     </div>
-                    <div class="validation-message">{{passwordsDoNotMatch}}</div>
-                </div>
-                <div class="form-group">
-                    <button ng-disabled="!canContinue" ng-click="canSignUp()" data-toggle="modal" data-target="#signupModal" type="button" class="btn btn-primary btn-lg btn-block login-button">Update</button>
-                </div>
-                <div class="validation-message">{{errorMessage}}</div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>

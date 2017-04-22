@@ -88,14 +88,22 @@ table {
   margin-top: 15vh;
   margin-bottom: 7%; }
 
-#accountPanel .panel {
-  margin-top: 50px; }
-
 .btn-share {
   margin-bottom: 20px; }
 
 .table-header-margin {
   margin: 10px 0; }
+
+#personalInfo {
+  background-color: white;
+  color: #4A4A4A !important; }
+  #personalInfo .container .panel-heading {
+    margin: 5% auto 0px auto; }
+  #personalInfo .container .panel-body {
+    margin: 0 auto 5% auto; }
+
+#accountPanel .panel {
+  margin-top: 50px; }
 
 .jumbotron#index_jumbo {
   height: 100vh; }
