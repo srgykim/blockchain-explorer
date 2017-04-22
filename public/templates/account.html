@@ -115,14 +115,12 @@
 <div class="container" id="accountPanel">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <!-- <div class="container"> -->
-                <div class="form-group">
-                    <label for="publicKey">Private key:</label>
-                    <br />
-                    <span class="text-muted">Enter Your PK if you wand to Read the Message or Verify Signature</span>
-                    <input ng-blur="validatePriv(privateKey)" ng-model="privateKey" type="text" class="form-control" id="privateKey">
-                    <span class="text-alert">{{invalidPriv}}</span>
-                <!-- </div> -->
+            <div class="form-group">
+                <label for="publicKey">Private key:</label>
+                <br />
+                <span class="text-muted">Enter Your PK if you wand to Read the Message or Verify Signature</span>
+                <input ng-blur="validatePriv(privateKey)" ng-model="privateKey" type="text" class="form-control" id="privateKey">
+                <span class="text-alert">{{invalidPriv}}</span>
             </div>
         </div>
     </div>

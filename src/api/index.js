@@ -200,13 +200,16 @@ router.post("/blocks", function(req, res) {
     bindVariables.tx = req.body.tx;
 
     if (token) {
+        console.log("Outside token check");
         jwt.verify(token, config.auth.secret, function(err, decoded) {
+            console.log("Inside token check");
             if (err) {
                 res.json({
                     success: false,
                     message: "Invalid token"
                 });
             }
+            console.log("After Error Control");
             var pubKeyQuery = "SELECT public_key FROM user WHERE username = ?";
             client.execute(pubKeyQuery, [req.body.username])
                 .then(function(result) {
@@ -269,19 +272,13 @@ router.post("/blocks", function(req, res) {
                     return client.execute(receiverPubQuery, [bindVariables.tx.receiverUsername]);
                 })
                 .then(function(result) {
-                    if (result.rows[0].public_key) {
                         // encrypt transaction data
                         bindVariables.tx.data = new Buffer(bindVariables.tx.data);
                         bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
                         return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
-                    } else {
-                        res.json({
-                            success: false,
-                            message: "User not found"
-                        });
-                    }
                 })
                 .then(function(encrypted) {
+
                     bindVariables.tx.data = {
                         iv: encrypted.iv.toString("hex"),
                         ephemPublicKey: encrypted.ephemPublicKey.toString("hex"),
@@ -317,7 +314,13 @@ router.post("/blocks", function(req, res) {
                         success: true,
                         message: "Data has been sent."
                     })
-                });
+                })
+                .catch(function() {
+                    res.json({
+                            success: false,
+                            message: "Send Message Error: check inputs for correctness"
+                        });
+                    });
         });
     } else {
         // find block height
