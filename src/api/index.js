@@ -88,8 +88,8 @@ router.post("/user_info/:username", function(req, res) {
                     message: "Invalid token"
                 });
             }
-            var pubKeyQuery = "SELECT username, first_name, last_name, organization FROM user WHERE username = ?";
-            client.execute(pubKeyQuery, [req.params.username])
+            var selectQuery = "SELECT username, first_name, last_name, organization FROM user WHERE username = ?";
+            client.execute(selectQuery, [req.params.username])
                 .then(function(result) {
                     output = result.rows[0];
 
@@ -116,7 +116,8 @@ router.put("/user_info/:username", function(req, res) {
 
     console.log("UPDATE");
     var output = [];
-    var user_info = null;
+    var user_info = req.body.user_info;
+    // console.log(user_info);
     var token = req.headers.authorization;
 
     if (req.params.username) {
@@ -127,24 +128,62 @@ router.put("/user_info/:username", function(req, res) {
                     message: "Invalid token"
                 });
             }
-            var pubKeyQuery = "UPDATE user Set username = ?, first_name = ?, last_name = ?, organization = ? WHERE username = ?";
-            client.execute(pubKeyQuery, [req.params.username])
-                .then(function(result) {
-                    output = result.rows[0];
 
-                    if (result.length == 0) {
-                        res.json({
-                            publicKey: output.public_key,
-                            success: false,
-                            message: "No transactions found"
-                        });
-                    } else {
-                        res.json({
-                            success: true,
-                            user_info: output
-                        });
-                    }
-                });
+            var selectQuery = "Select username From user Where username = ?";
+            var updateQuery;
+
+            console.log(user_info.changePass);
+
+            if (user_info.changePass){
+                console.log("with PASS");
+                updateQuery = "UPDATE user Set first_name = ?, last_name = ?, organization = ?, password = ?  WHERE username = ?";
+
+                user_info.password = crypto.createHash("sha256").update(user_info.password).digest().toString("hex");
+
+                client.execute(selectQuery, [user_info.username])
+                    .then(function(result) {
+                        if(result.rows[0]) {
+                            updateQuery = "UPDATE user Set first_name = ?, last_name = ?, organization = ?, password = ? WHERE username = ?";
+                            client.execute(updateQuery, [user_info.first_name, user_info.last_name, user_info.organization, user_info.password, user_info.username])
+                                .then(function(result) {
+                                    console.log(result);
+                                    res.json({
+                                        success: true,
+                                        message: "Information was successfully saved"
+                                    });
+                                });
+                        } else {
+                            res.json({
+                                success: false,
+                                message: "No account with such username"
+                            });
+                        }
+                    });
+
+            } else {
+                console.log("without PASS");
+
+                client.execute(selectQuery, [user_info.username])
+                    .then(function(result) {
+                        if(result.rows[0]) {
+                            updateQuery = "UPDATE user Set first_name = ?, last_name = ?, organization = ? WHERE username = ?";
+                            client.execute(updateQuery, [user_info.first_name, user_info.last_name, user_info.organization, user_info.username])
+                                .then(function(result) {
+                                    output = result;
+                                    console.log(output);
+                                    res.json({
+                                        success: true,
+                                        message: "Information was successfully saved"
+                                    });
+                                });
+                        } else {
+                            res.json({
+                                success: false,
+                                message: "No account with such username"
+                            });
+                        }
+                    });
+            }
         });
     }
 });

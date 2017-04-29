@@ -26,7 +26,8 @@
     "jsonwebtoken": "^7.2.1",
     "merkle": "^0.5.1",
     "mongoose": "^4.8.2",
-    "ng-file-upload": "^12.2.13"
+    "ng-file-upload": "^12.2.13",
+    "pem": "^1.9.4"
   },
   "devDependencies": {
     "del": "^2.2.2",

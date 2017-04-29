@@ -9,10 +9,11 @@ webpackJsonp([0],[
 
 var angular = __webpack_require__(1);
 
-angular.module('blockchainWalletApp').controller('signupCtrl', __webpack_require__(13));
-angular.module('blockchainWalletApp').controller('signinCtrl', __webpack_require__(12));
-angular.module('blockchainWalletApp').controller('mainCtrl', __webpack_require__(11));
-angular.module('blockchainWalletApp').controller('blockCtrl', __webpack_require__(10));
+angular.module('blockchainWalletApp').controller('signupCtrl', __webpack_require__(14));
+angular.module('blockchainWalletApp').controller('signinCtrl', __webpack_require__(13));
+angular.module('blockchainWalletApp').controller('mainCtrl', __webpack_require__(12));
+angular.module('blockchainWalletApp').controller('blockCtrl', __webpack_require__(11));
+angular.module('blockchainWalletApp').controller('accountCtrl', __webpack_require__(10));
 
 
 /***/ }),
@@ -24,9 +25,9 @@ angular.module('blockchainWalletApp').controller('blockCtrl', __webpack_require_
 
 var angular = __webpack_require__(1);
 
-angular.module('blockchainWalletApp').directive('signup', __webpack_require__(16));
-angular.module('blockchainWalletApp').directive('signin', __webpack_require__(15));
-angular.module('blockchainWalletApp').directive('main', __webpack_require__(14));
+angular.module('blockchainWalletApp').directive('signup', __webpack_require__(17));
+angular.module('blockchainWalletApp').directive('signin', __webpack_require__(16));
+angular.module('blockchainWalletApp').directive('main', __webpack_require__(15));
 
 
 /***/ }),
@@ -38,18 +39,19 @@ angular.module('blockchainWalletApp').directive('main', __webpack_require__(14))
 
 var angular = __webpack_require__(1);
 
-angular.module('blockchainWalletApp').service('validationService', __webpack_require__(21));
-angular.module('blockchainWalletApp').service('signupService', __webpack_require__(20));
-angular.module('blockchainWalletApp').service('signinService', __webpack_require__(19));
-angular.module('blockchainWalletApp').service('mainService', __webpack_require__(18));
-angular.module('blockchainWalletApp').service('blockService', __webpack_require__(17));
+angular.module('blockchainWalletApp').service('validationService', __webpack_require__(23));
+angular.module('blockchainWalletApp').service('signupService', __webpack_require__(22));
+angular.module('blockchainWalletApp').service('signinService', __webpack_require__(21));
+angular.module('blockchainWalletApp').service('mainService', __webpack_require__(20));
+angular.module('blockchainWalletApp').service('blockService', __webpack_require__(19));
+angular.module('blockchainWalletApp').service('accountService', __webpack_require__(18));
 
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(22);
+__webpack_require__(24);
 module.exports = 'ngSanitize';
 
 
@@ -57,7 +59,7 @@ module.exports = 'ngSanitize';
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(23);
+__webpack_require__(25);
 
 module.exports = 'ui.bootstrap';
 
@@ -4756,11 +4758,93 @@ angular.module('ui.router.state')
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(37);
+__webpack_require__(39);
 module.exports = 'ngFileUpload';
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function AccountCtrl($scope, $rootScope, $interval, $window, $state,
+                  mainService, validationService, accountService) {
+
+    $scope.initAdminState = function() {
+        $rootScope.isAdmin = $window.localStorage.isAdmin;
+    };
+
+    $scope.getTransactions_for_account = function(authenticated) {
+        if ($window.localStorage.username) {
+            mainService.getTransactions($window.localStorage.username, $rootScope.isSignedIn,
+                function(success, txs) {
+                    $scope.txs = txs;
+                    $scope.hidetxs = true;
+                });
+        }
+    };
+
+    $scope.getUserInfo = function(authenticated) {
+        if ($window.localStorage.username) {
+                mainService.getUserInfo($window.localStorage.username, $rootScope.isSignedIn,
+                    function(success, user_info) {
+                        $scope.user_info = user_info;
+                    });
+
+        }
+    };
+
+    $scope.getUsersList = function(authenticated) {
+        if ($window.localStorage.username == "admin") {
+                mainService.getUsersList($window.localStorage.username, $rootScope.isSignedIn,
+                    function(success, users) {
+                        $scope.users = users;
+                    });
+
+        }
+    };
+
+    $scope.updateUserInfo = function(authenticated) {
+        $scope.incorrectPassword = "";
+        $scope.passwordsDoNotMatch = "";
+        $scope.errorMessage = "";
+
+        if ($scope.UserInfoForm.password.$pristine && $scope.UserInfoForm.confirm.$pristine) {
+            $scope.user_info.changePass = false;
+        } else if ((!$scope.UserInfoForm.password.$pristine && $scope.UserInfoForm.confirm.$pristine) || ($scope.UserInfoForm.password.$pristine && $scope.UserInfoForm.confirm.$pristine)){
+            $scope.errorMessage = "Please fill both password and password confirmation fields to change password";
+        } else {
+            if ($scope.user_info.password == "" || $scope.user_info.confirmation == "") {
+                $scope.user_info.changePass = false;
+            } else {
+                $scope.incorrectPassword = validationService.validatePassword($scope.user_info.password);
+                $scope.passwordsDoNotMatch = validationService.confirmPassword($scope.user_info.password, $scope.user_info.confirmation);
+                $scope.user_info.changePass = true;
+            }
+        }
+
+        if ($scope.incorrectPassword == "" && $scope.passwordsDoNotMatch == "" && $scope.errorMessage == "") {
+            console.log("API CALL");
+            mainService.updateUserInfo($window.localStorage.username, $rootScope.isSignedIn, $scope.user_info,
+                function(success, message) {
+                    if (success) {
+                        // $state.reload();
+                        $window.location.reload();
+                        alert(message);
+                    } else {
+                        alert(message);
+                    }
+                });
+        }
+    };
+}
+
+module.exports = AccountCtrl;
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4784,7 +4868,7 @@ module.exports = BlockCtrl;
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4860,9 +4944,7 @@ function MainCtrl($scope, $rootScope, $window,
         $rootScope.isSignedIn = $window.localStorage.length !== 0;
     };
 
-    $scope.initAdminState = function() {
-        $rootScope.isAdmin = $window.localStorage.isAdmin;
-    };
+
 
     $scope.getTransactions = function(authenticated) {
         if ($window.localStorage.username) {
@@ -4883,17 +4965,6 @@ function MainCtrl($scope, $rootScope, $window,
             }
         }
     };
-
-    $scope.getTransactions_for_account = function(authenticated) {
-        if ($window.localStorage.username) {
-            mainService.getTransactions($window.localStorage.username, $rootScope.isSignedIn,
-                function(success, txs) {
-                    $scope.txs = txs;
-                    $scope.hidetxs = true;
-                });
-        }
-    };
-
 
     $scope.hideTransactions = function() {
         $scope.hidetxs = false;
@@ -4975,32 +5046,13 @@ function MainCtrl($scope, $rootScope, $window,
         });
     };
 
-    $scope.getUserInfo = function(authenticated) {
-        if ($window.localStorage.username) {
-                mainService.getUserInfo($window.localStorage.username, $rootScope.isSignedIn,
-                    function(success, user_info) {
-                        $scope.user_info = user_info;
-                    });
-
-        }
-    };
-
-    $scope.getUsersList = function(authenticated) {
-        if ($window.localStorage.username == "admin") {
-                mainService.getUsersList($window.localStorage.username, $rootScope.isSignedIn,
-                    function(success, users) {
-                        $scope.users = users;
-                    });
-
-        }
-    };
 }
 
 module.exports = MainCtrl;
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5039,7 +5091,7 @@ module.exports = SigninCtrl;
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5093,7 +5145,7 @@ module.exports = SignupCtrl;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5111,7 +5163,7 @@ module.exports = MainDirective;
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5129,7 +5181,7 @@ module.exports = SigninDirective;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5147,7 +5199,21 @@ module.exports = SignupDirective;
 
 
 /***/ }),
-/* 17 */
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function AccountService($http) {
+
+}
+
+module.exports = AccountService;
+
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5170,7 +5236,7 @@ module.exports = BlockService;
 
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5180,53 +5246,6 @@ function MainService($http, $window) {
 
     this.downloadKeys = function() {
         $window.open('/api/generate');
-    };
-
-    this.getUserInfo = function(parameter, authenticated, callback) {
-        var settings = {};
-        if (authenticated) {
-            settings = {
-                method: 'POST',
-                url: '/api/user_info/' + parameter,
-                data: {
-                },
-                headers: {
-                    'Authorization': $window.localStorage.token
-                }
-            };
-        }
-        $http(settings)
-            .then(function(response) {
-                if (response.data.success) {
-                    callback(true, response.data.user_info)
-                } else {
-                    callback(false, response.data.message);
-                }
-            });
-    };
-
-
-    this.getUsersList = function(parameter, authenticated, callback) {
-        var settings = {};
-        if (authenticated) {
-            settings = {
-                method: 'POST',
-                url: '/api/users_list/' + parameter,
-                data: {
-                },
-                headers: {
-                    'Authorization': $window.localStorage.token
-                }
-            };
-        }
-        $http(settings)
-            .then(function(response) {
-                if (response.data.success) {
-                    callback(true, response.data.users)
-                } else {
-                    callback(false, response.data.message);
-                }
-            });
     };
 
     this.signEncryptSend = function(tx, callback) {
@@ -5358,13 +5377,99 @@ function MainService($http, $window) {
                 }
             });
     }
+
+    this.getUserInfo = function(parameter, authenticated, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'POST',
+                url: '/api/user_info/' + parameter,
+                data: {
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.user_info)
+                } else {
+                    callback(false, response.data.message);
+                }
+            });
+    };
+
+
+    this.getUsersList = function(parameter, authenticated, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'POST',
+                url: '/api/users_list/' + parameter,
+                data: {
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.users)
+                } else {
+                    callback(false, response.data.message);
+                }
+            });
+    };
+
+    this.updateUserInfo = function(parameter, authenticated, user_info, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'PUT',
+                url: '/api/user_info/' + parameter,
+                data: {
+                    user_info: user_info
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+
+        // $http.post('/api/users', user)
+        //     .then(function() {
+        //         return $http.post('/api/auth', user);
+        //     }).then(function(response) {
+        //         $window.localStorage.token = response.data.token;
+        //         $window.localStorage.username = user.username;
+        //         $window.open('/api/users/keys');
+        //         callback(true);
+        //     })
+        //     .catch(function(err) {
+        //         callback(false);
+        //     });
+
+
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.message)
+                } else {
+                    callback(false, response.data.message);
+                }
+            });
+    };
 }
 
 module.exports = MainService;
 
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5392,7 +5497,7 @@ module.exports = SigninService;
 
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5420,7 +5525,7 @@ module.exports = SignupService;
 
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5479,7 +5584,7 @@ function ValidationService() {
 module.exports = ValidationService;
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports) {
 
 /**
@@ -6224,7 +6329,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports) {
 
 /*
@@ -14005,8 +14110,6 @@ angular.module('ui.bootstrap.timepicker').run(function() {!angular.$$csp().noInl
 angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTypeaheadCss && angular.element(document).find('head').prepend('<style type="text/css">[uib-typeahead-popup].dropdown-menu{display:block;}</style>'); angular.$$uibTypeaheadCss = true; });
 
 /***/ }),
-/* 24 */,
-/* 25 */,
 /* 26 */,
 /* 27 */,
 /* 28 */,
@@ -14018,7 +14121,9 @@ angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInli
 /* 34 */,
 /* 35 */,
 /* 36 */,
-/* 37 */
+/* 37 */,
+/* 38 */,
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/**!
@@ -16923,7 +17028,7 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17013,7 +17118,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
             },
             home: {
                 templateUrl: '/templates/account.html',
-                controller: 'mainCtrl'
+                controller: 'accountCtrl'
             }
         }
     };
@@ -17068,4 +17173,4 @@ __webpack_require__(3);
 __webpack_require__(4);
 
 /***/ })
-],[38]);
+],[40]);

@@ -18,7 +18,7 @@
             </ul>
             <ul class="nav navbar-nav pull-right" ng-init="requestUserInfo()">
                 <li class="personal-message" ng-show="isSignedIn">
-                    <p>Wecome back, <a ui-sref="account"><span>{{user.username}}</span></a></p>
+                    <p>Welcome back, <a ui-sref="account"><span>{{user.username}}</span></a></p>
                 </li>
                 <li>
                     <button ui-sref="signup" ng-model="navbarToggle" ng-show="!isSignedIn" type="button" class="btn btn-primary navbar-btn">Sign Up</button>

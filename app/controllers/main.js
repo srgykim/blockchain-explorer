@@ -70,9 +70,7 @@ function MainCtrl($scope, $rootScope, $window,
         $rootScope.isSignedIn = $window.localStorage.length !== 0;
     };
 
-    $scope.initAdminState = function() {
-        $rootScope.isAdmin = $window.localStorage.isAdmin;
-    };
+
 
     $scope.getTransactions = function(authenticated) {
         if ($window.localStorage.username) {
@@ -93,17 +91,6 @@ function MainCtrl($scope, $rootScope, $window,
             }
         }
     };
-
-    $scope.getTransactions_for_account = function(authenticated) {
-        if ($window.localStorage.username) {
-            mainService.getTransactions($window.localStorage.username, $rootScope.isSignedIn,
-                function(success, txs) {
-                    $scope.txs = txs;
-                    $scope.hidetxs = true;
-                });
-        }
-    };
-
 
     $scope.hideTransactions = function() {
         $scope.hidetxs = false;
@@ -185,25 +172,6 @@ function MainCtrl($scope, $rootScope, $window,
         });
     };
 
-    $scope.getUserInfo = function(authenticated) {
-        if ($window.localStorage.username) {
-                mainService.getUserInfo($window.localStorage.username, $rootScope.isSignedIn,
-                    function(success, user_info) {
-                        $scope.user_info = user_info;
-                    });
-
-        }
-    };
-
-    $scope.getUsersList = function(authenticated) {
-        if ($window.localStorage.username == "admin") {
-                mainService.getUsersList($window.localStorage.username, $rootScope.isSignedIn,
-                    function(success, users) {
-                        $scope.users = users;
-                    });
-
-        }
-    };
 }
 
 module.exports = MainCtrl;

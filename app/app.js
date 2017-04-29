@@ -84,7 +84,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
             },
             home: {
                 templateUrl: '/templates/account.html',
-                controller: 'mainCtrl'
+                controller: 'accountCtrl'
             }
         }
     };

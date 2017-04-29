@@ -6,53 +6,6 @@ function MainService($http, $window) {
         $window.open('/api/generate');
     };
 
-    this.getUserInfo = function(parameter, authenticated, callback) {
-        var settings = {};
-        if (authenticated) {
-            settings = {
-                method: 'POST',
-                url: '/api/user_info/' + parameter,
-                data: {
-                },
-                headers: {
-                    'Authorization': $window.localStorage.token
-                }
-            };
-        }
-        $http(settings)
-            .then(function(response) {
-                if (response.data.success) {
-                    callback(true, response.data.user_info)
-                } else {
-                    callback(false, response.data.message);
-                }
-            });
-    };
-
-
-    this.getUsersList = function(parameter, authenticated, callback) {
-        var settings = {};
-        if (authenticated) {
-            settings = {
-                method: 'POST',
-                url: '/api/users_list/' + parameter,
-                data: {
-                },
-                headers: {
-                    'Authorization': $window.localStorage.token
-                }
-            };
-        }
-        $http(settings)
-            .then(function(response) {
-                if (response.data.success) {
-                    callback(true, response.data.users)
-                } else {
-                    callback(false, response.data.message);
-                }
-            });
-    };
-
     this.signEncryptSend = function(tx, callback) {
         var settings = {};
         if ($window.localStorage.token) {
@@ -182,6 +135,92 @@ function MainService($http, $window) {
                 }
             });
     }
+
+    this.getUserInfo = function(parameter, authenticated, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'POST',
+                url: '/api/user_info/' + parameter,
+                data: {
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.user_info)
+                } else {
+                    callback(false, response.data.message);
+                }
+            });
+    };
+
+
+    this.getUsersList = function(parameter, authenticated, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'POST',
+                url: '/api/users_list/' + parameter,
+                data: {
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.users)
+                } else {
+                    callback(false, response.data.message);
+                }
+            });
+    };
+
+    this.updateUserInfo = function(parameter, authenticated, user_info, callback) {
+        var settings = {};
+        if (authenticated) {
+            settings = {
+                method: 'PUT',
+                url: '/api/user_info/' + parameter,
+                data: {
+                    user_info: user_info
+                },
+                headers: {
+                    'Authorization': $window.localStorage.token
+                }
+            };
+        }
+
+        // $http.post('/api/users', user)
+        //     .then(function() {
+        //         return $http.post('/api/auth', user);
+        //     }).then(function(response) {
+        //         $window.localStorage.token = response.data.token;
+        //         $window.localStorage.username = user.username;
+        //         $window.open('/api/users/keys');
+        //         callback(true);
+        //     })
+        //     .catch(function(err) {
+        //         callback(false);
+        //     });
+
+
+        $http(settings)
+            .then(function(response) {
+                if (response.data.success) {
+                    callback(true, response.data.message)
+                } else {
+                    callback(false, response.data.message);
+                }
+            });
+    };
 }
 
 module.exports = MainService;
