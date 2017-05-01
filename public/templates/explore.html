@@ -3,7 +3,7 @@
         <div class="panel-heading">
             <h4 class="modal-title"><span class="glyphicon glyphicon-tasks"></span> Explorer</h4>
             <br />
-            <span class="text-muted">View the blocks relevant to your public key</span>
+            <span class="text-muted">Explore your data</span>
         </div>
         <div class="panel-body">
             <!-- Share -->
@@ -33,16 +33,12 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="publicKey">Enter your private key:</label>
-                <input ng-blur="validatePriv(privateKey)" ng-model="privateKey" type="text" class="form-control" id="privateKey">
-                <span class="text-alert">{{invalidPriv}}</span>
-            </div>
-            <div class="form-group" ng-show="!isSignedIn">
-                <label for="publicKey">Enter your public key:</label>
-                <input ng-blur="validatePub(publicKey)" ng-model="publicKey" type="text" class="form-control" id="publicKey">
-                <span class="text-alert">{{invalidPub}}</span>
-            </div>
+            <h4>Upload your public key</h4>
+            <input type="file" ngf-select ng-model="up.file" name="file"/><br />
+            <button ng-click="upload(up.file)" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-upload"></span> Upload
+            </button>
+
             <div align="right">
                 <button ng-show="!hidetxs" ng-click="getTransactions()" type="button" class="btn btn-default btn-sm">
                     <span class="glyphicon glyphicon-eye-open"></span> Show Transactions

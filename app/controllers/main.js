@@ -1,7 +1,7 @@
 'use strict';
 
 function MainCtrl($scope, $rootScope, $window,
-                  mainService, validationService) {
+                  mainService, validationService, Upload) {
 
     $scope.initView = function() {
         if ($window.localStorage.token) {
@@ -72,23 +72,19 @@ function MainCtrl($scope, $rootScope, $window,
 
 
 
-    $scope.getTransactions = function(authenticated) {
+    $scope.getTransactions = function(file) {
         if ($window.localStorage.username) {
-            if ($scope.invalidPriv === "") {
-                mainService.getTransactions($window.localStorage.username, $rootScope.isSignedIn,
-                    function(success, txs) {
-                        $scope.txs = txs;
-                        $scope.hidetxs = true;
-                    });
-            }
+            mainService.getTransactions($window.localStorage.username, $rootScope.isSignedIn,
+                function(success, txs) {
+                    $scope.txs = txs;
+                    $scope.hidetxs = true;
+                });
         } else {
-            if ($scope.invalidPub === "" && $scope.invalidPriv === "") {
-                mainService.getTransactions($scope.publicKey, $rootScope.isSignedIn,
-                    function(success, txs) {
-                        $scope.txs = txs;
-                        $scope.hidetxs = true;
-                    });
-            }
+            mainService.getTransactions($scope.publicKey, $rootScope.isSignedIn,
+                function(success, txs) {
+                    $scope.txs = txs;
+                    $scope.hidetxs = true;
+                });
         }
     };
 
@@ -120,6 +116,7 @@ function MainCtrl($scope, $rootScope, $window,
     $scope.signOut = function() {
         $window.localStorage.clear();
         $window.location.href = "/#!/";
+        $window.location.reload();
     };
 
     $scope.downloadKeys = function() {
@@ -172,6 +169,26 @@ function MainCtrl($scope, $rootScope, $window,
         });
     };
 
+    $scope.upload = function(file) {
+        console.log(file);
+        Upload.upload({
+            url: 'http://localhost:9000/api/upload', //webAPI exposed to upload the file
+            data:{file:file} //pass file as data, should be user ng-model
+        }).then(function (resp) { //upload function returns a promise
+            if(resp.data.error_code === 0){ //validate success
+                $window.alert('Success ' + resp.config.data.file.name + 'uploaded. Response: ');
+            } else {
+                $window.alert('an error occured');
+            }
+        }, function (resp) { //catch error
+            console.log('Error status: ' + resp.status);
+            $window.alert('Error status: ' + resp.status);
+        }, function (evt) {
+            console.log(evt);
+            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+        });
+    };
 }
 
 module.exports = MainCtrl;

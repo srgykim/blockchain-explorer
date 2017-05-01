@@ -35,13 +35,12 @@
             </div>
             <div class="form-group">
                 <div class="form-group" ng-show="!isSignedIn">
-                    <label for="from">
-                        From:
-                        <br />
-                        <span class="text-label">public key</span>
-                    </label>
-                    <input ng-blur="validateTransactionSender(tx.senderPublicKey)" ng-model="tx.senderPublicKey" type="text" class="form-control" id="from">
-                    <span class="text-alert">{{invalidSender}}</span>
+                    <b>From:</b>
+                    <h4>Upload your public key certificate</h4>
+                    <input type="file" ngf-select ng-model="up.priv" name="file"/><br />
+                    <button ng-click="upload(up.priv)" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-upload"></span> Upload
+                    </button>
                 </div>
                 <div class="form-group" ng-show="!isSignedIn">
                     <label for="to">
@@ -71,13 +70,12 @@
                 <textarea required ng-model="tx.data" class="form-control" rows="5" id="data"></textarea>
             </div>
             <div class="form-group">
-                <label for="signature">
-                    Signature:
-                    <br />
-                    <span class="text-label">private key</span>
-                </label>
-                <input ng-blur="validateTransactionSigningKey(tx.senderPrivateKey)" ng-model="tx.senderPrivateKey" ng-model="transaction.receiver" type="text" class="form-control" id="signature">
-                <span class="text-alert">{{invalidSigningKey}}</span>
+                <b>Signature:</b>
+                <h4>Upload your private key</h4>
+                <input type="file" ngf-select ng-model="up.pub" name="file"/><br />
+                <button ng-click="upload(up.pub)" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-upload"></span> Upload
+                </button>
             </div>
         </div>
         <div class="panel-footer">

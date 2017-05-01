@@ -8,6 +8,8 @@ var eccrypto    = require('eccrypto');
 var fs          = require('fs');
 var cassandra   = require('cassandra-driver');
 var merkle      = require('merkle');
+var shell       = require('shelljs');
+var multer      = require('multer');
 
 var config      = require('../config');
 
@@ -15,16 +17,28 @@ var router      = express.Router();
 var client      = new cassandra.Client(config.cassandra);
 
 
+router.get("/users/1", function(req, res) {
+    shell.exec("openssl x509 -pubkey -noout -in src/api/tmp/public.pem > src/api/tmp/public_key.pem");
+    res.json({success:true});
+});
 // create a new user
 router.post("/users", function(req, res) {
     var user = req.body;
 
     user.password = crypto.createHash("sha256").update(user.password).digest().toString("hex");
 
-    user.privateKey = crypto.randomBytes(32);
-    user.publicKey = eccrypto.getPublic(user.privateKey);
-    user.privateKey = user.privateKey.toString("hex");
-    user.publicKey = user.publicKey.toString("hex");
+    shell.exec("openssl ec -pubin -inform PEM -text -noout < src/api/tmp/public_key.pem -out src/api/tmp/public_key_hex.txt");
+    var publicKey = fs.readFileSync(__dirname + '/tmp/public_key_hex.txt').toString().split("\n");
+
+    var pubKey = "";
+    for (var i = 1; i <= 5; i++) {
+        publicKey[i].trim().split(":").forEach(function(num) {
+            pubKey += num;
+        });
+    }
+    console.log(pubKey);
+
+    user.publicKey = pubKey;
 
     var userExistsQuery = "SELECT * FROM user WHERE username = ?";
     client.execute(userExistsQuery, [user.username])
@@ -41,23 +55,6 @@ router.post("/users", function(req, res) {
             }
         })
         .then(function(result) {
-            var privPath = __dirname + '/tmp/ECC_PRIVATE_KEY.txt';
-            var pubPath = __dirname + '/tmp/ECC_PUBLIC_KEY.txt';
-
-            var privateKey = user.privateKey;
-            var publicKey = user.publicKey;
-
-            fs.writeFile(privPath, privateKey, function(err) {
-                if (err) {
-                    console.log(err)
-                }
-            });
-            fs.writeFile(pubPath, publicKey, function(err) {
-                if (err) {
-                    console.log(err)
-                }
-            });
-
             res.json({
                 success: true,
                 message: "A new user has been created"
@@ -110,7 +107,8 @@ router.post("/user_info/:username", function(req, res) {
     }
 });
 
-// TODO:
+
+
 // change user private information
 router.put("/user_info/:username", function(req, res) {
 
@@ -161,8 +159,6 @@ router.put("/user_info/:username", function(req, res) {
                     });
 
             } else {
-                console.log("without PASS");
-
                 client.execute(selectQuery, [user_info.username])
                     .then(function(result) {
                         if(result.rows[0]) {
@@ -192,13 +188,17 @@ router.put("/user_info/:username", function(req, res) {
 
 // download key pair of registered user
 router.get("/users/keys", function(req, res) {
-    var privPath = __dirname + '/tmp/ECC_PRIVATE_KEY.txt';
-    var pubPath = __dirname + '/tmp/ECC_PUBLIC_KEY.txt';
+    var privPath = __dirname + '/tmp/private.key';
+    var pubPath = __dirname + '/tmp/public.pem';
     var readmePath = __dirname + '/tmp/readme.txt';
 
+    shell.exec("openssl ecparam -genkey -name secp256k1 -out src/api/tmp/private.key");
+    shell.exec("openssl req -new -SHA256 -key src/api/tmp/private.key -nodes -out src/api/tmp/public.csr -batch");
+    shell.exec("openssl x509 -req -SHA256 -days 3650 -in src/api/tmp/public.csr -CA src/api/tmp/certificate_authority.pem -CAkey src/api/tmp/certificate_authority.key -CAcreateserial -out src/api/tmp/public.pem");
+
     res.zip([
-        { path: privPath, name: 'ECC_PRIVATE_KEY.txt' },
-        { path: pubPath, name: 'ECC_PUBLIC_KEY.txt' },
+        { path: privPath, name: 'private.key' },
+        { path: pubPath, name: 'public.pem' },
         { path: readmePath, name: 'readme.txt' }
     ]);
 });
@@ -238,133 +238,22 @@ router.post("/blocks", function(req, res) {
     var token = req.headers.authorization;
     bindVariables.tx = req.body.tx;
 
-    if (token) {
-        console.log("Outside token check");
-        jwt.verify(token, config.auth.secret, function(err, decoded) {
-            console.log("Inside token check");
-            if (err) {
-                res.json({
-                    success: false,
-                    message: "Invalid token"
-                });
-            }
-            console.log("After Error Control");
-            var pubKeyQuery = "SELECT public_key FROM user WHERE username = ?";
-            client.execute(pubKeyQuery, [req.body.username])
-                .then(function(result) {
-                    bindVariables.tx.senderPublicKey = new Buffer(result.rows[0].public_key, "hex");
+    jwt.verify(token, config.auth.secret, function(err, decoded) {
+        if (err) {
+            res.json({
+                success: false,
+                message: "Invalid token"
+            });
+        }
+        var pubKeyQuery = "SELECT public_key FROM user WHERE username = ?";
+        client.execute(pubKeyQuery, [req.body.username])
+            .then(function(result) {
+                bindVariables.tx.senderPublicKey = new Buffer(result.rows[0].public_key, "hex");
 
-                    // find block height
-                    var heightQuery = "SELECT MAX(height) AS max_height FROM block";
-                    return client.execute(heightQuery);
-                })
-                .then(function(result) {
-                    bindVariables.height = result.rows[0].max_height + 1;
-
-                    // make block header
-                    var lastBlockHeaderQuery = "SELECT * FROM block WHERE height = " + (bindVariables.height - 1).toString();
-                    return client.execute(lastBlockHeaderQuery);
-                })
-                .then(function(result) {
-                    // hash previous block header twice
-                    var lastHeader = result.rows[0];
-                    var concatenatedLastHeader = lastHeader.previous_block_hash +
-                        lastHeader.merkle_root +
-                        lastHeader.timestamp.toString();
-                    var lastHeaderHash = crypto.createHash("sha256")
-                        .update(concatenatedLastHeader).digest()
-                        .toString("hex");
-                    lastHeaderHash = crypto.createHash("sha256")
-                        .update(lastHeaderHash).digest()
-                        .toString("hex");
-                    bindVariables.previousBlockHash = lastHeaderHash;
-
-                    var merkleRootQuery = "SELECT transaction FROM block";
-                    return client.execute(merkleRootQuery);
-                })
-                .then(function(result) {
-                    var concatendatedTxs = [];
-                    result.rows.forEach(function(row) {
-                        var concatenatedTx = "";
-                        concatenatedTx += row.transaction.sender_public_key;
-                        concatenatedTx += row.transaction.receiver_public_key;
-                        concatenatedTx += row.transaction.signature;
-                        concatenatedTx += row.transaction.timestamp;
-                        concatenatedTx += row.transaction.data.iv;
-                        concatenatedTx += row.transaction.data.ephem_public_key;
-                        concatenatedTx += row.transaction.data.ciphertext;
-                        concatenatedTx += row.transaction.data.mac;
-                        concatendatedTxs.push(concatenatedTx);
-                    });
-                    bindVariables.merkleRoot = merkle("sha256").sync(concatendatedTxs).root();
-
-                    // sign a new transaction
-                    bindVariables.tx.senderPrivateKey = new Buffer(bindVariables.tx.senderPrivateKey, "hex");
-                    var hash = crypto.createHash("sha256").update(bindVariables.tx.data).digest();
-                    return eccrypto.sign(bindVariables.tx.senderPrivateKey, hash);
-                })
-                .then(function(signature) {
-                    bindVariables.tx.signature = signature.toString("hex");
-
-                    // find receiver's public key by username
-                    var receiverPubQuery = "SELECT public_key FROM user WHERE username = ?";
-                    return client.execute(receiverPubQuery, [bindVariables.tx.receiverUsername]);
-                })
-                .then(function(result) {
-                        // encrypt transaction data
-                        bindVariables.tx.data = new Buffer(bindVariables.tx.data);
-                        bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
-                        return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
-                })
-                .then(function(encrypted) {
-
-                    bindVariables.tx.data = {
-                        iv: encrypted.iv.toString("hex"),
-                        ephemPublicKey: encrypted.ephemPublicKey.toString("hex"),
-                        ciphertext: encrypted.ciphertext.toString("hex"),
-                        mac: encrypted.mac.toString("hex")
-                    };
-
-                    bindVariables.tx.senderPublicKey = bindVariables.tx.senderPublicKey.toString("hex");
-                    bindVariables.tx.receiverPublicKey = bindVariables.tx.receiverPublicKey.toString("hex");
-
-                    // insert a new block
-                    var blockInsertQuery = "" +
-                        "INSERT INTO block (height, previous_block_hash, merkle_root, timestamp, transaction) " +
-                        "VALUES (" + bindVariables.height + ", '" +
-                        bindVariables.previousBlockHash + "', '" +
-                        bindVariables.merkleRoot + "', " + "toTimeStamp(now()), " +
-                        "	{" +
-                        "		sender_public_key: '" + bindVariables.tx.senderPublicKey + "', " +
-                        "		receiver_public_key: '" + bindVariables.tx.receiverPublicKey + "', " +
-                        "		signature: '" + bindVariables.tx.signature + "', " +
-                        "		timestamp: toTimeStamp(now()), " +
-                        "		data: {" +
-                        "			iv: '" + bindVariables.tx.data.iv + "', " +
-                        "			ephem_public_key: '" + bindVariables.tx.data.ephemPublicKey + "', " +
-                        "			ciphertext: '" + bindVariables.tx.data.ciphertext + "', " +
-                        "			mac: '" + bindVariables.tx.data.mac + "'" +
-                        "		}" +
-                        "	})";
-                    return client.execute(blockInsertQuery);
-                })
-                .then(function(result) {
-                    res.json({
-                        success: true,
-                        message: "Data has been sent."
-                    })
-                })
-                .catch(function() {
-                    res.json({
-                            success: false,
-                            message: "Send Message Error: check inputs for correctness"
-                        });
-                    });
-        });
-    } else {
-        // find block height
-        var heightQuery = "SELECT MAX(height) AS max_height FROM block";
-        client.execute(heightQuery)
+                // find block height
+                var heightQuery = "SELECT MAX(height) AS max_height FROM block";
+                return client.execute(heightQuery);
+            })
             .then(function(result) {
                 bindVariables.height = result.rows[0].max_height + 1;
 
@@ -406,6 +295,7 @@ router.post("/blocks", function(req, res) {
                 bindVariables.merkleRoot = merkle("sha256").sync(concatendatedTxs).root();
 
                 // sign a new transaction
+
                 bindVariables.tx.senderPrivateKey = new Buffer(bindVariables.tx.senderPrivateKey, "hex");
                 var hash = crypto.createHash("sha256").update(bindVariables.tx.data).digest();
                 return eccrypto.sign(bindVariables.tx.senderPrivateKey, hash);
@@ -413,12 +303,18 @@ router.post("/blocks", function(req, res) {
             .then(function(signature) {
                 bindVariables.tx.signature = signature.toString("hex");
 
-                // encrypt transaction data
-                bindVariables.tx.data = new Buffer(bindVariables.tx.data);
-                bindVariables.tx.receiverPublicKey = new Buffer(bindVariables.tx.receiverPublicKey, "hex");
-                return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
+                // find receiver's public key by username
+                var receiverPubQuery = "SELECT public_key FROM user WHERE username = ?";
+                return client.execute(receiverPubQuery, [bindVariables.tx.receiverUsername]);
+            })
+            .then(function(result) {
+                    // encrypt transaction data
+                    bindVariables.tx.data = new Buffer(bindVariables.tx.data);
+                    bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
+                    return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
             })
             .then(function(encrypted) {
+
                 bindVariables.tx.data = {
                     iv: encrypted.iv.toString("hex"),
                     ephemPublicKey: encrypted.ephemPublicKey.toString("hex"),
@@ -452,10 +348,16 @@ router.post("/blocks", function(req, res) {
             .then(function(result) {
                 res.json({
                     success: true,
-                    message: "Message has been sent."
+                    message: "Data has been sent."
                 })
-            });
-    }
+            })
+            .catch(function() {
+                res.json({
+                        success: false,
+                        message: "Send Message Error: check inputs for correctness"
+                    });
+                });
+    });
 });
 
 // get all blocks
@@ -549,7 +451,18 @@ router.post("/transactions", function(req, res) {
     var token = req.headers.authorization;
     var txsQuery = "SELECT transaction FROM block";
 
-    publicKey = req.body.publicKey;
+    shell.exec("openssl x509 -pubkey -noout -in src/api/uploads/public.pem > src/api/tmp/public_key.pem");
+    shell.exec("openssl ec -pubin -inform PEM -text -noout < src/api/tmp/public_key.pem -out src/api/tmp/public_key_hex.txt");
+    publicKey = fs.readFileSync(__dirname + '/tmp/public_key_hex.txt').toString().split("\n");
+
+    var pubKey = "";
+    for (var i = 1; i <= 5; i++) {
+        publicKey[i].trim().split(":").forEach(function(num) {
+            pubKey += num;
+        });
+    }
+    console.log(pubKey);
+
     client.execute(txsQuery)
     .then(function(result) {
         result.rows.forEach(function(row) {
@@ -676,44 +589,48 @@ router.post("/users_list/:username", function(req, res) {
 
 
 
-
 // generate a new key pair
 router.get("/generate", function(req, res) {
-    var privPath = __dirname + '/tmp/ECC_PRIVATE_KEY.txt';
-    var pubPath = __dirname + '/tmp/ECC_PUBLIC_KEY.txt';
+    var privPath = __dirname + '/tmp/private.key';
+    var pubPath = __dirname + '/tmp/public.pem';
     var readmePath = __dirname + '/tmp/readme.txt';
 
-    var privateKey = crypto.randomBytes(32);
-    var publicKey = eccrypto.getPublic(privateKey);
-
-    privateKey = privateKey.toString("hex");
-    publicKey = publicKey.toString("hex");
-
-    fs.writeFile(privPath, privateKey, function(err) {
-        if (err) {
-            console.log(err)
-        }
-    });
-    fs.writeFile(pubPath, publicKey, function(err) {
-        if (err) {
-            console.log(err)
-        }
-    });
+    shell.exec("openssl ecparam -genkey -name secp256k1 -out src/api/tmp/private.key");
+    shell.exec("openssl req -new -SHA256 -key src/api/tmp/private.key -nodes -out src/api/tmp/public.csr -batch");
+    shell.exec("openssl x509 -req -SHA256 -days 3650 -in src/api/tmp/public.csr -CA src/api/tmp/certificate_authority.pem -CAkey src/api/tmp/certificate_authority.key -CAcreateserial -out src/api/tmp/public.pem");
 
     res.zip([
-        { path: privPath, name: 'ECC_PRIVATE_KEY.txt' },
-        { path: pubPath, name: 'ECC_PUBLIC_KEY.txt' },
+        { path: privPath, name: 'private.key' },
+        { path: pubPath, name: 'public.pem' },
         { path: readmePath, name: 'readme.txt' }
     ]);
 });
 
 
 
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, __dirname + '/uploads/')
+    },
+    filename: function (req, file, cb) {
+        var datetimestamp = Date.now();
+        cb(null, file.originalname);
+    }
+});
 
+var upload = multer({
+    storage: storage
+}).single('file');
 
-
-
-
-
+// upload a file
+router.post('/upload', function(req, res) {
+    upload(req,res,function(err){
+        if(err){
+            res.json({error_code:1,err_desc:err});
+            return;
+        }
+        res.json({error_code:0,err_desc:null});
+    })
+});
 
 module.exports = router;

@@ -7,13 +7,12 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" ui-sref="home">Blockchain Explorer</a>
+            <a class="navbar-brand" ui-sref="home">Hyper Record</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li ng-show="!isSignedIn"><a ui-sref="keygen">Key Generator</a></li>
-                <li><a ui-sref="send">Block Generator</a></li>
-                <li><a ui-sref="explore">Block Explorer</a></li>
+                <li ng-show="isSignedIn"><a ui-sref="send">Block Generator</a></li>
             </ul>
             <ul class="nav navbar-nav pull-right" ng-init="requestUserInfo()">
                 <li class="personal-message" ng-show="isSignedIn">

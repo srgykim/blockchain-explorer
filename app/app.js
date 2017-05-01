@@ -18,6 +18,14 @@ app.config(function($stateProvider, $urlRouterProvider) {
             home: {
                 templateUrl: '/templates/home.html',
                 controller: 'mainCtrl'
+            },
+            block: {
+                templateUrl: '/templates/block.html',
+                controller: 'blockCtrl'
+            },
+            explore: {
+                templateUrl: '/templates/explore.html',
+                controller: 'mainCtrl'
             }
         }
     };

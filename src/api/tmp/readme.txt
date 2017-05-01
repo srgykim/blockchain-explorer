@@ -1,14 +1,14 @@
  ------------------------------------------------------------------------
 |DISCLAIMER                                                              |
 |A new key pair has been generated to your file system. This is your duty|
-|to keep your private key safe. Blockchain Explorer is not responsible   |
-|for loss of generated keys by any means.                                |
+|to keep your private key safe. Hyper Record is not responsible for loss |
+|of generated keys by any means.                                         |
  ------------------------------------------------------------------------
 
-    - Your private key is stored in file "ECC_PRIVATE_KEY.txt".
+    - Your private key is stored in file "private.key".
       Use it to send secure messages to other blockchain participants.
 
-    - Your public key is stored in file "ECC_PUBLIC_KEY.txt".
+    - Your public key certificate is stored in file "public.pem".
       Share it with others to receive secure messages.
 
 *****************************************************************

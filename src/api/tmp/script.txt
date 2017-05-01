@@ -1,0 +1,23 @@
+GENERATE CERTIFICATE AUTHORITY PRIVATE KEY
+openssl ecparam -genkey -name secp256k1 -out certificate_authority.key
+
+GENERATE CERTIFICATE OF THE CERTIFICATE AUTHORITY
+openssl req -x509 -new -SHA256 -nodes -key certificate_authority.key -days 3650 -out certificate_authority.pem
+
+GENERATE USER PRIVATE KEY
+openssl ecparam -genkey -name secp256k1 -out private.key
+
+GENERATE CERTIFICATE SIGNING REQUEST
+openssl req -new -SHA256 -key private.key -nodes -out public.csr -batch
+
+GENERATE USER SELF-SIGNED USER CERTIFICATE
+openssl x509 -req -SHA256 -days 3650 -in public.csr -CA certificate_authority.pem -CAkey certificate_authority.key -CAcreateserial -out public.pem
+
+EXTRACT PUBLIC KEY FROM THE USER CERTIFICATE
+openssl x509 -pubkey -noout -in public.pem > public_key.pem
+
+CONVERT BASE64 PUBLIC KEY TO HEX PUBLIC KEY
+openssl ec -pubin -inform PEM -text -noout < public_key.pem -out public_key_hex.txt
+
+CONVERT BASE64 PRIVATE KEY TO HEX PRIVATE KEY
+openssl ec -inform PEM -text -noout < private.key -out private_key_hex.txt
