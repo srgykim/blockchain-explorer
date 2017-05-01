@@ -33,7 +33,13 @@
                     </div>
                 </div>
             </div>
-            <h4>Upload your public key</h4>
+            <h4 ng-show="!isSignedIn">Upload your public key certificate</h4>
+            <input ng-show="!isSignedIn" type="file" ngf-select ng-model="up.file" name="file"/><br />
+            <button ng-show="!isSignedIn" ng-click="upload(up.file)" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-upload"></span> Upload
+            </button>
+
+            <h4>Upload your private key</h4>
             <input type="file" ngf-select ng-model="up.file" name="file"/><br />
             <button ng-click="upload(up.file)" class="btn btn-default btn-sm">
                 <span class="glyphicon glyphicon-upload"></span> Upload
@@ -49,44 +55,43 @@
                     <span class="glyphicon glyphicon-eye-close"></span> Hide Transactions
                 </button>
             </div>
+            <br />
+            <table ng-show="hidetxs" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th><div class="table-header-margin">From</div></th>
+                    <th><div class="table-header-margin">Signature</div></th>
+                    <th><div class="table-header-margin">Timestamp</div></th>
+                    <th><div class="table-header-margin">Data</div></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="tx in txs">
+                    <td class="word-wrap">{{tx.sender_public_key}}</td>
+                    <td class="word-wrap">
+                        {{tx.signature}}
+                        <br />
+                        <div align="right">
+                            <button ng-disabled="invalidPrivateKey" ng-click="verifyTransaction(tx)" data-toggle="modal" data-target="#verified" type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-ok"></span> Verify
+                            </button>
+                        </div>
+                    </td>
+                    <td class="word-wrap">{{tx.timestamp}}</td>
+                    <td class="word-wrap">
+                        {{tx.data.iv + tx.data.ephem_public_key + tx.data.ciphertext + tx.data.mac}}
+                        <br />
+                        <div align="right">
+                            <button ng-disabled="invalidPrivateKey && invalidPublicKey" ng-click="decryptData(tx.data)" data-toggle="modal" data-target="#decrypted" type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-lock"></span> Read
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
-<div class="container">
-    <table ng-show="hidetxs" class="table table-bordered">
-        <thead>
-            <tr>
-                <th><div class="table-header-margin">From</div></th>
-                <th><div class="table-header-margin">Signature</div></th>
-                <th><div class="table-header-margin">Timestamp</div></th>
-                <th><div class="table-header-margin">Data</div></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="tx in txs">
-                <td class="word-wrap">{{tx.sender_public_key}}</td>
-                <td class="word-wrap">
-                    {{tx.signature}}
-                    <br />
-                    <div align="right">
-                        <button ng-disabled="invalidPrivateKey" ng-click="verifyTransaction(tx)" data-toggle="modal" data-target="#verified" type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-ok"></span> Verify
-                        </button>
-                    </div>
-                </td>
-                <td class="word-wrap">{{tx.timestamp}}</td>
-                <td class="word-wrap">
-                    {{tx.data.iv + tx.data.ephem_public_key + tx.data.ciphertext + tx.data.mac}}
-                    <br />
-                    <div align="right">
-                        <button ng-disabled="invalidPrivateKey && invalidPublicKey" ng-click="decryptData(tx.data)" data-toggle="modal" data-target="#decrypted" type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-lock"></span> Read
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </div>
 <!-- Decrypt -->
 <div class="modal fade" id="decrypted" role="dialog">
@@ -109,13 +114,11 @@
                     <br />
                 </div>
                 <div class="form-group">
-                    <label for="signature_f">
-                        Signature:
-                        <br />
-                        <span class="text-label">private key</span>
-                    </label>
-                    <input ng-blur="validateTransactionSigningKeyForward(txf.senderPrivateKey)" ng-model="txf.senderPrivateKey" ng-model="transaction.receiver" type="text" class="form-control" id="signature_f">
-                    <span class="text-alert">{{invalidSigningKeyForward}}</span>
+                    <h4>Upload your private key</h4>
+                    <input type="file" ngf-select ng-model="up.file" name="file"/><br />
+                    <button ng-click="upload(up.file)" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-upload"></span> Upload
+                    </button>
                 </div>
                 <div align="center">
                     <button ng-click="forward()" data-toggle="modal" data-target="#myModal" ng-disabled="invalidRecForward || invalidSignForward" type="button" class="btn btn-default" data-dismiss="modal">

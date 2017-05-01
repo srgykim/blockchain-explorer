@@ -17,7 +17,7 @@ var router      = express.Router();
 var client      = new cassandra.Client(config.cassandra);
 
 
-router.get("/users/1", function(req, res) {
+router.get("/users/serv", function(req, res) {
     shell.exec("openssl x509 -pubkey -noout -in src/api/tmp/public.pem > src/api/tmp/public_key.pem");
     res.json({success:true});
 });
@@ -36,7 +36,6 @@ router.post("/users", function(req, res) {
             pubKey += num;
         });
     }
-    console.log(pubKey);
 
     user.publicKey = pubKey;
 
@@ -112,7 +111,6 @@ router.post("/user_info/:username", function(req, res) {
 // change user private information
 router.put("/user_info/:username", function(req, res) {
 
-    console.log("UPDATE");
     var output = [];
     var user_info = req.body.user_info;
     // console.log(user_info);
@@ -238,22 +236,147 @@ router.post("/blocks", function(req, res) {
     var token = req.headers.authorization;
     bindVariables.tx = req.body.tx;
 
-    jwt.verify(token, config.auth.secret, function(err, decoded) {
-        if (err) {
-            res.json({
-                success: false,
-                message: "Invalid token"
-            });
-        }
-        var pubKeyQuery = "SELECT public_key FROM user WHERE username = ?";
-        client.execute(pubKeyQuery, [req.body.username])
-            .then(function(result) {
-                bindVariables.tx.senderPublicKey = new Buffer(result.rows[0].public_key, "hex");
+    if (token) {
+        jwt.verify(token, config.auth.secret, function (err, decoded) {
+            if (err) {
+                res.json({
+                    success: false,
+                    message: "Invalid token"
+                });
+            }
+            var pubKeyQuery = "SELECT public_key FROM user WHERE username = ?";
+            client.execute(pubKeyQuery, [req.body.username])
+                .then(function (result) {
 
-                // find block height
-                var heightQuery = "SELECT MAX(height) AS max_height FROM block";
-                return client.execute(heightQuery);
-            })
+                    bindVariables.tx.senderPublicKey = new Buffer(result.rows[0].public_key, "hex");
+
+                    // find block height
+                    var heightQuery = "SELECT MAX(height) AS max_height FROM block";
+                    return client.execute(heightQuery);
+                })
+                .then(function (result) {
+                    bindVariables.height = result.rows[0].max_height + 1;
+
+                    // make block header
+                    var lastBlockHeaderQuery = "SELECT * FROM block WHERE height = " + (bindVariables.height - 1).toString();
+                    return client.execute(lastBlockHeaderQuery);
+                })
+                .then(function (result) {
+                    // hash previous block header twice
+                    var lastHeader = result.rows[0];
+                    var concatenatedLastHeader = lastHeader.previous_block_hash +
+                        lastHeader.merkle_root +
+                        lastHeader.timestamp.toString();
+                    var lastHeaderHash = crypto.createHash("sha256")
+                        .update(concatenatedLastHeader).digest()
+                        .toString("hex");
+                    lastHeaderHash = crypto.createHash("sha256")
+                        .update(lastHeaderHash).digest()
+                        .toString("hex");
+                    bindVariables.previousBlockHash = lastHeaderHash;
+
+                    var merkleRootQuery = "SELECT transaction FROM block";
+                    return client.execute(merkleRootQuery);
+                })
+                .then(function (result) {
+                    var concatendatedTxs = [];
+                    result.rows.forEach(function (row) {
+                        var concatenatedTx = "";
+                        concatenatedTx += row.transaction.sender_public_key;
+                        concatenatedTx += row.transaction.receiver_public_key;
+                        concatenatedTx += row.transaction.signature;
+                        concatenatedTx += row.transaction.timestamp;
+                        concatenatedTx += row.transaction.data.iv;
+                        concatenatedTx += row.transaction.data.ephem_public_key;
+                        concatenatedTx += row.transaction.data.ciphertext;
+                        concatenatedTx += row.transaction.data.mac;
+                        concatendatedTxs.push(concatenatedTx);
+                    });
+                    bindVariables.merkleRoot = merkle("sha256").sync(concatendatedTxs).root();
+
+                    // sign a new transaction
+
+                    shell.exec("openssl ec -inform PEM -text -noout < src/api/uploads/private.key -out src/api/tmp/private_key_hex.txt");
+                    var privateKey = fs.readFileSync(__dirname + '/tmp/private_key_hex.txt').toString().split("\n");
+
+                    var privKey = "";
+                    for (var i = 2; i <= 4; i++) {
+                        privateKey[i].trim().split(":").forEach(function (num) {
+                            privKey += num;
+                        });
+                    }
+                    if (privKey.substr(0, 2) == "00") {
+                        privKey = privKey.substr(2, privKey.length);
+                    }
+
+                    bindVariables.tx.senderPrivateKey = new Buffer(privKey, "hex");
+                    var hash = crypto.createHash("sha256").update(bindVariables.tx.data).digest();
+
+                    return eccrypto.sign(bindVariables.tx.senderPrivateKey, hash);
+                })
+                .then(function (signature) {
+                    console.log("here");
+                    bindVariables.tx.signature = signature.toString("hex");
+
+                    // find receiver's public key by username
+                    var receiverPubQuery = "SELECT public_key FROM user WHERE username = ?";
+                    return client.execute(receiverPubQuery, [bindVariables.tx.receiverUsername]);
+                })
+                .then(function (result) {
+                    // encrypt transaction data
+                    bindVariables.tx.data = new Buffer(bindVariables.tx.data);
+                    bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
+                    return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
+                })
+                .then(function (encrypted) {
+
+                    bindVariables.tx.data = {
+                        iv: encrypted.iv.toString("hex"),
+                        ephemPublicKey: encrypted.ephemPublicKey.toString("hex"),
+                        ciphertext: encrypted.ciphertext.toString("hex"),
+                        mac: encrypted.mac.toString("hex")
+                    };
+
+                    bindVariables.tx.senderPublicKey = bindVariables.tx.senderPublicKey.toString("hex");
+                    bindVariables.tx.receiverPublicKey = bindVariables.tx.receiverPublicKey.toString("hex");
+
+                    // insert a new block
+                    var blockInsertQuery = "" +
+                        "INSERT INTO block (height, previous_block_hash, merkle_root, timestamp, transaction) " +
+                        "VALUES (" + bindVariables.height + ", '" +
+                        bindVariables.previousBlockHash + "', '" +
+                        bindVariables.merkleRoot + "', " + "toTimeStamp(now()), " +
+                        "	{" +
+                        "		sender_public_key: '" + bindVariables.tx.senderPublicKey + "', " +
+                        "		receiver_public_key: '" + bindVariables.tx.receiverPublicKey + "', " +
+                        "		signature: '" + bindVariables.tx.signature + "', " +
+                        "		timestamp: toTimeStamp(now()), " +
+                        "		data: {" +
+                        "			iv: '" + bindVariables.tx.data.iv + "', " +
+                        "			ephem_public_key: '" + bindVariables.tx.data.ephemPublicKey + "', " +
+                        "			ciphertext: '" + bindVariables.tx.data.ciphertext + "', " +
+                        "			mac: '" + bindVariables.tx.data.mac + "'" +
+                        "		}" +
+                        "	})";
+                    return client.execute(blockInsertQuery);
+                })
+                .then(function (result) {
+                    res.json({
+                        success: true,
+                        message: "Data has been sent."
+                    })
+                })
+                .catch(function () {
+                    res.json({
+                        success: false,
+                        message: "Send Message Error: check inputs for correctness"
+                    });
+                });
+        });
+    } else {
+        // find block height
+        var heightQuery = "SELECT MAX(height) AS max_height FROM block";
+        client.execute(heightQuery)
             .then(function(result) {
                 bindVariables.height = result.rows[0].max_height + 1;
 
@@ -296,8 +419,22 @@ router.post("/blocks", function(req, res) {
 
                 // sign a new transaction
 
-                bindVariables.tx.senderPrivateKey = new Buffer(bindVariables.tx.senderPrivateKey, "hex");
+                shell.exec("openssl ec -inform PEM -text -noout < src/api/uploads/private.key -out src/api/tmp/private_key_hex.txt");
+                var privateKey = fs.readFileSync(__dirname + '/tmp/private_key_hex.txt').toString().split("\n");
+
+                var privKey = "";
+                for (var i = 2; i <= 4; i++) {
+                    privateKey[i].trim().split(":").forEach(function (num) {
+                        privKey += num;
+                    });
+                }
+                if (privKey.substr(0, 2) == "00") {
+                    privKey = privKey.substr(2, privKey.length);
+                }
+
+                bindVariables.tx.senderPrivateKey = new Buffer(privKey, "hex");
                 var hash = crypto.createHash("sha256").update(bindVariables.tx.data).digest();
+
                 return eccrypto.sign(bindVariables.tx.senderPrivateKey, hash);
             })
             .then(function(signature) {
@@ -305,16 +442,16 @@ router.post("/blocks", function(req, res) {
 
                 // find receiver's public key by username
                 var receiverPubQuery = "SELECT public_key FROM user WHERE username = ?";
+                console.log(bindVariables.tx.receiverUsername);
                 return client.execute(receiverPubQuery, [bindVariables.tx.receiverUsername]);
             })
-            .then(function(result) {
-                    // encrypt transaction data
-                    bindVariables.tx.data = new Buffer(bindVariables.tx.data);
-                    bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
-                    return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
+            .then(function (result) {
+                // encrypt transaction data
+                bindVariables.tx.data = new Buffer(bindVariables.tx.data);
+                bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
+                return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
             })
             .then(function(encrypted) {
-
                 bindVariables.tx.data = {
                     iv: encrypted.iv.toString("hex"),
                     ephemPublicKey: encrypted.ephemPublicKey.toString("hex"),
@@ -322,7 +459,17 @@ router.post("/blocks", function(req, res) {
                     mac: encrypted.mac.toString("hex")
                 };
 
-                bindVariables.tx.senderPublicKey = bindVariables.tx.senderPublicKey.toString("hex");
+                shell.exec("openssl ec -pubin -inform PEM -text -noout < src/api/tmp/public_key.pem -out src/api/tmp/public_key_hex.txt");
+                var spublicKey = fs.readFileSync(__dirname + '/tmp/public_key_hex.txt').toString().split("\n");
+
+                var spubKey = "";
+                for (var i = 1; i <= 5; i++) {
+                    spublicKey[i].trim().split(":").forEach(function(num) {
+                        spubKey += num;
+                    });
+                }
+
+                bindVariables.tx.senderPublicKey = spubKey;
                 bindVariables.tx.receiverPublicKey = bindVariables.tx.receiverPublicKey.toString("hex");
 
                 // insert a new block
@@ -348,16 +495,10 @@ router.post("/blocks", function(req, res) {
             .then(function(result) {
                 res.json({
                     success: true,
-                    message: "Data has been sent."
+                    message: "Message has been sent."
                 })
-            })
-            .catch(function() {
-                res.json({
-                        success: false,
-                        message: "Send Message Error: check inputs for correctness"
-                    });
-                });
-    });
+            });
+    }
 });
 
 // get all blocks
@@ -444,6 +585,10 @@ router.post("/transactions/:username", function(req, res) {
 });
 
 
+router.get("/transactions/1", function(req, res) {
+    shell.exec("openssl x509 -pubkey -noout -in src/api/uploads/public.pem > src/api/tmp/public_key.pem");
+    res.json({status: true});
+});
 // get all transactions
 router.post("/transactions", function(req, res) {
     var txs = [];
@@ -451,7 +596,6 @@ router.post("/transactions", function(req, res) {
     var token = req.headers.authorization;
     var txsQuery = "SELECT transaction FROM block";
 
-    shell.exec("openssl x509 -pubkey -noout -in src/api/uploads/public.pem > src/api/tmp/public_key.pem");
     shell.exec("openssl ec -pubin -inform PEM -text -noout < src/api/tmp/public_key.pem -out src/api/tmp/public_key_hex.txt");
     publicKey = fs.readFileSync(__dirname + '/tmp/public_key_hex.txt').toString().split("\n");
 
@@ -461,12 +605,11 @@ router.post("/transactions", function(req, res) {
             pubKey += num;
         });
     }
-    console.log(pubKey);
 
     client.execute(txsQuery)
     .then(function(result) {
         result.rows.forEach(function(row) {
-            if (row.transaction.receiver_public_key === publicKey) {
+            if (row.transaction.receiver_public_key === pubKey) {
                 txs.push(row.transaction);
             }
         });
@@ -494,9 +637,22 @@ router.post("/decrypt", function(req, res) {
     data.ciphertext = new Buffer(data.ciphertext, "hex");
     data.mac = new Buffer(data.mac, "hex");
 
-    var privateKey = new Buffer(req.body.privateKey, "hex");
+    shell.exec("openssl ec -inform PEM -text -noout < src/api/uploads/private.key -out src/api/tmp/private_key_hex.txt");
+    var privateKey = fs.readFileSync(__dirname + '/tmp/private_key_hex.txt').toString().split("\n");
 
-    eccrypto.decrypt(privateKey, data)
+    var privKey = "";
+    for (var i = 2; i <= 4; i++) {
+        privateKey[i].trim().split(":").forEach(function(num) {
+            privKey += num;
+        });
+    }
+
+    if (privKey.substr(0, 2) == "00") {
+        privKey = privKey.substr(2, privKey.length);
+    }
+    var privKeyBuff = new Buffer(privKey, "hex");
+
+    eccrypto.decrypt(privKeyBuff, data)
         .then(function(decrypted) {
             res.json({
                 success: true,
@@ -520,15 +676,23 @@ router.post("/verify", function(req, res) {
     data.ephemPublicKey = new Buffer(data.ephem_public_key, "hex");
     data.ciphertext = new Buffer(data.ciphertext, "hex");
     data.mac = new Buffer(data.mac, "hex");
-    try {
-        var privKey = new Buffer(req.body.privateKey, "hex");
-    } catch(err) {
-        res.json({
-            success: false,
-            message: "Unable to verify the transaction: bad private key."
+
+    shell.exec("openssl ec -inform PEM -text -noout < src/api/uploads/private.key -out src/api/tmp/private_key_hex.txt");
+    var privateKey = fs.readFileSync(__dirname + '/tmp/private_key_hex.txt').toString().split("\n");
+
+    var privKey = "";
+    for (var i = 2; i <= 4; i++) {
+        privateKey[i].trim().split(":").forEach(function(num) {
+            privKey += num;
         });
     }
-    eccrypto.decrypt(privKey, data)
+
+    if (privKey.substr(0, 2) == "00") {
+        privKey = privKey.substr(2, privKey.length);
+    }
+    var privKeyBuff = new Buffer(privKey, "hex");
+
+    eccrypto.decrypt(privKeyBuff, data)
         .then(function(decrypted) {
             return decrypted.toString();
         })

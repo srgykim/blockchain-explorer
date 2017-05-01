@@ -55,13 +55,14 @@ function MainService($http, $window) {
                 }
             }
         )
-            .then(function(response) {
-                if (response.data.success) {
-                    callback(true, response.data.message)
-                } else {
-                    callback(false, response.data.message);
-                }
-            });
+        .then(function(response) {
+            if (response.data.success) {
+                $window.location.reload();
+                callback(true, response.data.message)
+            } else {
+                callback(false, response.data.message);
+            }
+        });
     };
 
     this.getTransactions = function(parameter, authenticated, callback) {
@@ -85,14 +86,17 @@ function MainService($http, $window) {
                 }
             };
         }
-        $http(settings)
-            .then(function(response) {
-                if (response.data.success) {
-                    callback(true, response.data.txs)
-                } else {
-                    callback(false, response.data.txs);
-                }
-            });
+
+        $http.get("/api/transactions/1").then(function() {
+            return $http(settings);
+        })
+        .then(function(response) {
+            if (response.data.success) {
+                callback(true, response.data.txs)
+            } else {
+                callback(false, response.data.txs);
+            }
+        });
     };
 
     this.decryptData = function(data, privateKey, callback) {
@@ -120,8 +124,7 @@ function MainService($http, $window) {
             method: 'POST',
             url: '/api/verify',
             data: {
-                tx: tx,
-                privateKey: privateKey
+                tx: tx
             },
             headers: {
                 'Authorization': $window.localStorage.token
@@ -134,7 +137,7 @@ function MainService($http, $window) {
                     callback(false, response.data.verified);
                 }
             });
-    }
+    };
 
     this.getUserInfo = function(parameter, authenticated, callback) {
         var settings = {};

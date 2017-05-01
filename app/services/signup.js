@@ -5,10 +5,10 @@ function SignupService($http, $window, $timeout) {
     this.createUser = function(user, callback) {
         $timeout(function() {
             $window.open('/api/users/keys');
-        }, 1000);
+        }, 500);
 
         $timeout(function() {
-            $http.get("/api/users/1").then(function() {
+            $http.get("/api/users/serv").then(function() {
                 return $http.post('/api/users', user)
             })
             .then(function() {
@@ -22,7 +22,7 @@ function SignupService($http, $window, $timeout) {
             .catch(function(err) {
                 callback(false);
             })
-        }, 2000);
+        }, 1000);
     };
 }
 

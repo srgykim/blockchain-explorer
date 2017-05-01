@@ -128,14 +128,12 @@ function MainCtrl($scope, $rootScope, $window,
 
         if ($window.localStorage.token) {
             tx = {
-                senderPrivateKey: $scope.tx.senderPrivateKey,
                 receiverUsername: $scope.tx.receiverUsername,
                 data: $scope.tx.data
             };
         } else {
             tx = {
-                senderPrivateKey: $scope.tx.senderPrivateKey,
-                senderPublicKey: $scope.tx.senderPublicKey,
+                receiverUsername: $scope.tx.receiverUsername,
                 receiverPublicKey: $scope.tx.receiverPublicKey,
                 data: $scope.tx.data
             };
