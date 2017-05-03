@@ -1,6 +1,6 @@
 'use strict';
 
-function MainService($http, $window) {
+function MainService($http, $window, $timeout) {
 
     this.downloadKeys = function() {
         $window.open('/api/generate');
@@ -31,14 +31,21 @@ function MainService($http, $window) {
                     }
                 }
         }
-        $http(settings)
-            .then(function(response) {
-                if (response.data.success) {
-                    callback(true, response.data.message)
-                } else {
-                    callback(false, response.data.message);
-                }
-            });
+        $timeout(function() {
+            $http.get("/api/blocks/1");
+        }, 100);
+        $timeout(function() {
+            $http(settings)
+                .then(function(response) {
+                    if (response.data.success) {
+                        callback(true, response.data.message)
+                    } else {
+                        callback(false, response.data.message);
+                    }
+                });
+        }, 200);
+
+
     };
 
     this.forward = function(txf, callback) {
@@ -201,20 +208,6 @@ function MainService($http, $window) {
             };
         }
 
-        // $http.post('/api/users', user)
-        //     .then(function() {
-        //         return $http.post('/api/auth', user);
-        //     }).then(function(response) {
-        //         $window.localStorage.token = response.data.token;
-        //         $window.localStorage.username = user.username;
-        //         $window.open('/api/users/keys');
-        //         callback(true);
-        //     })
-        //     .catch(function(err) {
-        //         callback(false);
-        //     });
-
-
         $http(settings)
             .then(function(response) {
                 if (response.data.success) {
@@ -225,5 +218,4 @@ function MainService($http, $window) {
             });
     };
 }
-
 module.exports = MainService;

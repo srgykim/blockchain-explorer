@@ -113,7 +113,6 @@ router.put("/user_info/:username", function(req, res) {
 
     var output = [];
     var user_info = req.body.user_info;
-    // console.log(user_info);
     var token = req.headers.authorization;
 
     if (req.params.username) {
@@ -128,10 +127,7 @@ router.put("/user_info/:username", function(req, res) {
             var selectQuery = "Select username From user Where username = ?";
             var updateQuery;
 
-            console.log(user_info.changePass);
-
             if (user_info.changePass){
-                console.log("with PASS");
                 updateQuery = "UPDATE user Set first_name = ?, last_name = ?, organization = ?, password = ?  WHERE username = ?";
 
                 user_info.password = crypto.createHash("sha256").update(user_info.password).digest().toString("hex");
@@ -142,7 +138,6 @@ router.put("/user_info/:username", function(req, res) {
                             updateQuery = "UPDATE user Set first_name = ?, last_name = ?, organization = ?, password = ? WHERE username = ?";
                             client.execute(updateQuery, [user_info.first_name, user_info.last_name, user_info.organization, user_info.password, user_info.username])
                                 .then(function(result) {
-                                    console.log(result);
                                     res.json({
                                         success: true,
                                         message: "Information was successfully saved"
@@ -163,8 +158,6 @@ router.put("/user_info/:username", function(req, res) {
                             updateQuery = "UPDATE user Set first_name = ?, last_name = ?, organization = ? WHERE username = ?";
                             client.execute(updateQuery, [user_info.first_name, user_info.last_name, user_info.organization, user_info.username])
                                 .then(function(result) {
-                                    output = result;
-                                    console.log(output);
                                     res.json({
                                         success: true,
                                         message: "Information was successfully saved"
@@ -229,6 +222,11 @@ router.post("/auth", function(req, res) {
     });
 });
 
+
+router.get("/blocks/1", function(req, res) {
+    shell.exec("openssl x509 -pubkey -noout -in src/api/uploads/public.pem > src/api/tmp/public_key.pem");
+    res.json({success:true});
+});
 
 // create a new block
 router.post("/blocks", function(req, res) {
@@ -315,7 +313,6 @@ router.post("/blocks", function(req, res) {
                     return eccrypto.sign(bindVariables.tx.senderPrivateKey, hash);
                 })
                 .then(function (signature) {
-                    console.log("here");
                     bindVariables.tx.signature = signature.toString("hex");
 
                     // find receiver's public key by username
@@ -442,13 +439,13 @@ router.post("/blocks", function(req, res) {
 
                 // find receiver's public key by username
                 var receiverPubQuery = "SELECT public_key FROM user WHERE username = ?";
-                console.log(bindVariables.tx.receiverUsername);
                 return client.execute(receiverPubQuery, [bindVariables.tx.receiverUsername]);
             })
             .then(function (result) {
                 // encrypt transaction data
                 bindVariables.tx.data = new Buffer(bindVariables.tx.data);
                 bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
+
                 return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
             })
             .then(function(encrypted) {
@@ -468,6 +465,7 @@ router.post("/blocks", function(req, res) {
                         spubKey += num;
                     });
                 }
+
 
                 bindVariables.tx.senderPublicKey = spubKey;
                 bindVariables.tx.receiverPublicKey = bindVariables.tx.receiverPublicKey.toString("hex");
@@ -497,7 +495,13 @@ router.post("/blocks", function(req, res) {
                     success: true,
                     message: "Message has been sent."
                 })
-            });
+            })
+            .catch(function () {
+                    res.json({
+                        success: false,
+                        message: "Send Message Error: check inputs for correctness"
+                    });
+                });
     }
 });
 
@@ -690,6 +694,7 @@ router.post("/verify", function(req, res) {
     if (privKey.substr(0, 2) == "00") {
         privKey = privKey.substr(2, privKey.length);
     }
+
     var privKeyBuff = new Buffer(privKey, "hex");
 
     eccrypto.decrypt(privKeyBuff, data)
@@ -709,7 +714,7 @@ router.post("/verify", function(req, res) {
             });
         })
         .catch(function(err) {
-            console.log(err.message);
+            console.log("ERROR: " +  err.message);
             res.json({
                 success: true,
                 verified: false

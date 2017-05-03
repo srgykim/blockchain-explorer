@@ -166,6 +166,15 @@ function MainCtrl($scope, $rootScope, $window,
             }
         });
     };
+    $scope.pubFileInput = true;
+    $scope.privFileInput = true;
+
+    $scope.pubFileInputChanged = function(name) {
+        $scope.pubFileInput = false;
+    };
+    $scope.privFileInputChanged = function(name) {
+        $scope.privFileInput = false;
+    };
 
     $scope.upload = function(file) {
         console.log(file);
@@ -174,9 +183,12 @@ function MainCtrl($scope, $rootScope, $window,
             data:{file:file} //pass file as data, should be user ng-model
         }).then(function (resp) { //upload function returns a promise
             if(resp.data.error_code === 0){ //validate success
-                $window.alert('Success ' + resp.config.data.file.name + 'uploaded. Response: ');
+                $scope.uploadFileStatusMessage = "Successfully uploaded your file";
+                $scope.isUploaded = true;
+                // $window.alert('Success ' + resp.config.data.file.name + ' uploaded. Response: ');
             } else {
-                $window.alert('an error occured');
+                $scope.uploadFileStatusMessage = "An Error Occurred";
+                $scope.isUploaded = false;
             }
         }, function (resp) { //catch error
             console.log('Error status: ' + resp.status);

@@ -34,14 +34,14 @@
                 </div>
             </div>
             <h4 ng-show="!isSignedIn">Upload your public key certificate</h4>
-            <input ng-show="!isSignedIn" type="file" ngf-select ng-model="up.file" name="file"/><br />
-            <button ng-show="!isSignedIn" ng-click="upload(up.file)" class="btn btn-default btn-sm">
+            <input ng-show="!isSignedIn" type="file" ngf-select ng-model="up.file" name="file" onchange="angular.element(this).scope().pubFileInputChanged()"/><br />
+            <button ng-disabled="pubFileInput" ng-show="!isSignedIn" ng-click="upload(up.file)" data-toggle="modal" data-target="#uploadModal" class="btn btn-default btn-sm">
                 <span class="glyphicon glyphicon-upload"></span> Upload
             </button>
 
             <h4>Upload your private key</h4>
-            <input type="file" ngf-select ng-model="up.file" name="file"/><br />
-            <button ng-click="upload(up.file)" class="btn btn-default btn-sm">
+            <input type="file" ngf-select ng-model="up.file" name="file" onchange="angular.element(this).scope().privFileInputChanged()"/><br />
+            <button ng-disabled="privFileInput" ng-click="upload(up.file)" data-toggle="modal" data-target="#uploadModal" class="btn btn-default btn-sm">
                 <span class="glyphicon glyphicon-upload"></span> Upload
             </button>
 
@@ -116,7 +116,7 @@
                 <div class="form-group">
                     <h4>Upload your private key</h4>
                     <input type="file" ngf-select ng-model="up.file" name="file"/><br />
-                    <button ng-click="upload(up.file)" class="btn btn-default btn-sm">
+                    <button ng-click="upload(up.file)" data-toggle="modal" data-target="#uploadModal" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-upload"></span> Upload
                     </button>
                 </div>
@@ -152,5 +152,23 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
+    </div>]
+</div>
+
+<!-- Upload Fail/Success Modal -->
+<div class="modal fade" id="uploadModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" align="center">
+                <h4>{{uploadFileStatusMessage}}</h4>
+                <span ng-show="isUploaded" class="modal-success glyphicon glyphicon-download-alt"></span>
+                <span ng-show="!isUploaded" class="modal-fail glyphicon glyphicon-download-alt"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
+
+

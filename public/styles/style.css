@@ -94,6 +94,9 @@ table {
 .table-header-margin {
   margin: 10px 0; }
 
+.modal {
+  margin-top: 12%; }
+
 #personalInfo {
   background-color: white;
   color: #4A4A4A !important; }
@@ -101,9 +104,15 @@ table {
     margin: 5% auto 0px auto; }
   #personalInfo .container .panel-body {
     margin: 0 auto 5% auto; }
+  #personalInfo button {
+    margin-top: 50px; }
 
 #accountPanel .panel {
   margin-top: 50px; }
+
+#accountExplore {
+  margin: 50px auto;
+  background-color: #4A4A4A; }
 
 .jumbotron#index_jumbo {
   height: 100vh; }

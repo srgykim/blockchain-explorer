@@ -143,5 +143,5 @@ app.config(function($stateProvider, $urlRouterProvider) {
 });
 
 require('./controllers');
-require('./directives');
+// require('./directives');
 require('./services');

@@ -9,7 +9,7 @@ function SignupService($http, $window, $timeout) {
 
         $timeout(function() {
             $http.get("/api/users/serv").then(function() {
-                return $http.post('/api/users', user)
+                return $http.post('/api/users', user);
             })
             .then(function() {
                 return $http.post('/api/auth', user);

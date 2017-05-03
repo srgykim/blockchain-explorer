@@ -132,6 +132,9 @@ table {
 	margin: 10px 0;
 }
 
+.modal {
+	margin-top: 12%;
+}
 
 
 #personalInfo {
@@ -144,12 +147,19 @@ table {
 	.container .panel-body{
 		margin:0 auto 5% auto;
 	}
+	button {
+		margin-top:50px;
+	}
 }
 
 #accountPanel .panel {
 	margin-top:50px;
 }
 
+#accountExplore {
+	margin: 50px auto;
+	background-color: $c-darkgray;
+}
 .jumbotron#index_jumbo {
 	height: 100vh;
 }

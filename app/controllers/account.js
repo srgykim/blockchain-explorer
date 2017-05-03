@@ -57,11 +57,9 @@ function AccountCtrl($scope, $rootScope, $interval, $window, $state,
         }
 
         if ($scope.incorrectPassword == "" && $scope.passwordsDoNotMatch == "" && $scope.errorMessage == "") {
-            console.log("API CALL");
             mainService.updateUserInfo($window.localStorage.username, $rootScope.isSignedIn, $scope.user_info,
                 function(success, message) {
                     if (success) {
-                        // $state.reload();
                         $window.location.reload();
                         alert(message);
                     } else {

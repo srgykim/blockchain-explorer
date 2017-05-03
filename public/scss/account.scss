@@ -8,8 +8,16 @@
 	.container .panel-body{
 		margin:0 auto 5% auto;
 	}
+	button {
+		margin-top:50px;
+	}
 }
 
 #accountPanel .panel {
 	margin-top:50px;
+}
+
+#accountExplore {
+	margin: 50px auto;
+	background-color: $c-darkgray;
 }
