@@ -64,11 +64,30 @@
                             <div class="validation-message">{{passwordsDoNotMatch}}</div>
                         </div>
                         <div class="form-group" style="">
-                            <button ng-click="updateUserInfo()" data-toggle="modal" data-target="#signupModal" type="button" class="btn btn-primary btn-lg btn-block login-button">Update</button>
+                            <button data-toggle="modal" data-target="#updateModal" ng-click="updateUserInfo()" data-toggle="modal" data-target="#signupModal" type="button" class="btn btn-primary btn-lg btn-block login-button">Update</button>
                         </div>
                         <div class="validation-message">{{errorMessage}}</div>
                     </div>
                 </form>
+            </div>
+            <!-- Update Fail/Success Modal -->
+            <div class="modal fade" id="updateModal" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body" align="center">
+                            <h4>{{updatedDataStatusMessage}}</h4>
+                            <div class="modal-success" ng-show="isUpdated" align="center">
+                                <span class="glyphicon glyphicon-ok"></span><h4>Successfully updated</h4>
+                            </div>
+                            <div class="modal-fail" ng-show="!isUpdated" align="center">
+                                <span class="glyphicon glyphicon-remove"></span><h4>Unable to update your personal data</h4>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <br /><br /><br /><br /><br /><br />
         </div>

@@ -45,16 +45,31 @@
                 <span class="glyphicon glyphicon-upload"></span> Upload
             </button>
 
-            <div align="right">
-                <button ng-show="!hidetxs" ng-click="getTransactions()" type="button" class="btn btn-default btn-sm">
-                    <span class="glyphicon glyphicon-eye-open"></span> Show Transactions
-                </button>
+            <div ng-show="!isSignedIn">
+                <div align="right">
+                    <button ng-disabled="pubFileInput" ng-show="!hidetxs" ng-click="getTransactions()" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-eye-open"></span> Show Transactions
+                    </button>
+                </div>
+                <div align="right">
+                    <button ng-click="hideTransactions()" ng-show="hidetxs" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-eye-close"></span> Hide Transactions
+                    </button>
+                </div>
             </div>
-            <div align="right">
-                <button ng-click="hideTransactions()" ng-show="hidetxs" type="button" class="btn btn-default btn-sm">
-                    <span class="glyphicon glyphicon-eye-close"></span> Hide Transactions
-                </button>
+            <div ng-show="isSignedIn">
+                <div align="right">
+                    <button ng-show="!hidetxs" ng-click="getTransactions()" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-eye-open"></span> Show Transactions
+                    </button>
+                </div>
+                <div align="right">
+                    <button ng-click="hideTransactions()" ng-show="hidetxs" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-eye-close"></span> Hide Transactions
+                    </button>
+                </div>
             </div>
+
             <br />
             <table ng-show="hidetxs" class="table table-bordered">
                 <thead>
@@ -103,7 +118,7 @@
             </div>
             <div class="modal-body">
                 <div class="alert alert-info" ng-bind-html="decrypted"></div>
-                <div class="form-group" ng-show="isSignedIn">
+                <div class="form-group">
                     <label for="to_u_f">
                         Forward To:
                         <br />

@@ -59,12 +59,7 @@ function AccountCtrl($scope, $rootScope, $interval, $window, $state,
         if ($scope.incorrectPassword == "" && $scope.passwordsDoNotMatch == "" && $scope.errorMessage == "") {
             mainService.updateUserInfo($window.localStorage.username, $rootScope.isSignedIn, $scope.user_info,
                 function(success, message) {
-                    if (success) {
-                        $window.location.reload();
-                        alert(message);
-                    } else {
-                        alert(message);
-                    }
+                    $scope.isUpdated = success;
                 });
         }
     };
