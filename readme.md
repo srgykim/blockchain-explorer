@@ -1,13 +1,13 @@
-#Blockchain Explorer
+Blockchain Explorer
 
 See:
-http://ec2-54-191-180-62.us-west-2.compute.amazonaws.com:9000/
+http://139.162.99.4:9000/
 
-##Requirements:
+Requirements:
 - Cassandra (cluster needs to be installed with CCM).
 It can be installed with [homebrew](http://brew.sh/).
 
-##How to run the app:
+How to run the app:
 - Install dependencies (from the app directory):
 ```
 npm install
@@ -32,5 +32,5 @@ nodemon
 webpack --watch
 ```
 
-## Block structure:
+Block structure:
 Refer to cassandra-ddl.cql to create schema
