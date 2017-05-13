@@ -61,6 +61,11 @@
                 <textarea required ng-model="tx.data" class="form-control" rows="5" id="data"></textarea>
             </div>
             <div class="form-group">
+                <input type="file" ngf-select ng-model="up.send_file" name="file"/><br />
+                <button ng-click="upload_file(up.send_file)" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-upload"></span> Upload </button>
+            </div>
+
+            <div class="form-group">
                 <b>Signature:</b>
                 <h4>Upload your private key</h4>
                 <input type="file" ngf-select ng-model="up.pub" name="file" onchange="angular.element(this).scope().privFileInputChanged()"/><br />

@@ -11,11 +11,14 @@ CREATE TYPE encrypted_data (
 );
 
 CREATE TYPE transaction (
-	sender_public_key text,
-	receiver_public_key text,
-	signature text,
-	timestamp timestamp,
-	data frozen <encrypted_data>
+    sender_public_key text,
+    receiver_public_key text,
+    signature text,
+    file_signature text,
+    filename text,
+    timestamp timestamp,
+    data frozen <encrypted_data>,
+    file_data frozen <encrypted_data>
 );
 
 CREATE TABLE block (

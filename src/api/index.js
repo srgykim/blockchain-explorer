@@ -10,6 +10,7 @@ var cassandra   = require('cassandra-driver');
 var merkle      = require('merkle');
 var shell       = require('shelljs');
 var multer      = require('multer');
+var fs          = require('fs');
 
 var config      = require('../config');
 
@@ -233,6 +234,7 @@ router.post("/blocks", function(req, res) {
     var bindVariables = {};
     var token = req.headers.authorization;
     bindVariables.tx = req.body.tx;
+    // console.log(bindVariables.tx.sendFileUploaded + "    " + bindVariables.tx.sendFileName);
 
     if (token) {
         jwt.verify(token, config.auth.secret, function (err, decoded) {
@@ -292,6 +294,9 @@ router.post("/blocks", function(req, res) {
                     });
                     bindVariables.merkleRoot = merkle("sha256").sync(concatendatedTxs).root();
 
+
+
+
                     // sign a new transaction
 
                     shell.exec("openssl ec -inform PEM -text -noout < src/api/uploads/private.key -out src/api/tmp/private_key_hex.txt");
@@ -314,6 +319,18 @@ router.post("/blocks", function(req, res) {
                 })
                 .then(function (signature) {
                     bindVariables.tx.signature = signature.toString("hex");
+                    bindVariables.tx.file_signature = "";
+                    if(bindVariables.tx.sendFileUploaded){
+                        bindVariables.tx.file_data = fs.readFileSync(__dirname + '/uploads/' + bindVariables.tx.sendFileName);
+                        // console.log("Synchronouse read: " + file_data);
+
+                        var hash = crypto.createHash("sha256").update(bindVariables.tx.file_data).digest();
+                        eccrypto.sign(bindVariables.tx.senderPrivateKey, hash)
+                            .then(function(file_signature) {
+                                bindVariables.tx.file_signature = file_signature.toString("hex");
+                                // console.log("File Signature: " + bindVariables.tx.file_signature);
+                            });
+                    }
 
                     // find receiver's public key by username
                     var receiverPubQuery = "SELECT public_key FROM user WHERE username = ?";
@@ -323,6 +340,26 @@ router.post("/blocks", function(req, res) {
                     // encrypt transaction data
                     bindVariables.tx.data = new Buffer(bindVariables.tx.data);
                     bindVariables.tx.receiverPublicKey = new Buffer(result.rows[0].public_key, "hex");
+
+                    if(bindVariables.tx.sendFileUploaded){
+                        eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.file_data)
+                            .then(function(encrypted) {
+                                bindVariables.tx.file_data = {
+                                    iv: encrypted.iv.toString("hex"),
+                                    ephemPublicKey: encrypted.ephemPublicKey.toString("hex"),
+                                    ciphertext: encrypted.ciphertext.toString("hex"),
+                                    mac: encrypted.mac.toString("hex")
+                                };
+                            });
+                    } else {
+                        bindVariables.tx.file_data = {
+                                    iv: "",
+                                    ephemPublicKey: "",
+                                    ciphertext: "",
+                                    mac: ""
+                                };
+                    }
+
                     return eccrypto.encrypt(bindVariables.tx.receiverPublicKey, bindVariables.tx.data);
                 })
                 .then(function (encrypted) {
@@ -333,6 +370,7 @@ router.post("/blocks", function(req, res) {
                         ciphertext: encrypted.ciphertext.toString("hex"),
                         mac: encrypted.mac.toString("hex")
                     };
+                    // console.log(bindVariables.tx);
 
                     bindVariables.tx.senderPublicKey = bindVariables.tx.senderPublicKey.toString("hex");
                     bindVariables.tx.receiverPublicKey = bindVariables.tx.receiverPublicKey.toString("hex");
@@ -347,13 +385,21 @@ router.post("/blocks", function(req, res) {
                         "		sender_public_key: '" + bindVariables.tx.senderPublicKey + "', " +
                         "		receiver_public_key: '" + bindVariables.tx.receiverPublicKey + "', " +
                         "		signature: '" + bindVariables.tx.signature + "', " +
+                        "       file_signature: '" + bindVariables.tx.file_signature + "', " +
+                        "       filename: '" + bindVariables.tx.sendFileName + "', " +
                         "		timestamp: toTimeStamp(now()), " +
                         "		data: {" +
                         "			iv: '" + bindVariables.tx.data.iv + "', " +
                         "			ephem_public_key: '" + bindVariables.tx.data.ephemPublicKey + "', " +
                         "			ciphertext: '" + bindVariables.tx.data.ciphertext + "', " +
                         "			mac: '" + bindVariables.tx.data.mac + "'" +
-                        "		}" +
+                        "		}" + ", " +
+                        "       file_data: {" +
+                        "           iv: '" + bindVariables.tx.file_data.iv + "', " +
+                        "           ephem_public_key: '" + bindVariables.tx.file_data.ephemPublicKey + "', " +
+                        "           ciphertext: '" + bindVariables.tx.file_data.ciphertext + "', " +
+                        "           mac: '" + bindVariables.tx.file_data.mac + "'" +
+                        "       }" +
                         "	})";
                     return client.execute(blockInsertQuery);
                 })
@@ -363,7 +409,8 @@ router.post("/blocks", function(req, res) {
                         message: "Data has been sent."
                     })
                 })
-                .catch(function () {
+                .catch(function (error) {
+                    console.log(error);
                     res.json({
                         success: false,
                         message: "Send Message Error: check inputs for correctness"
@@ -618,6 +665,7 @@ router.post("/transactions", function(req, res) {
             }
         });
         if (txs.length === 0) {
+
             res.json({
                 success: false,
                 message: "No transactions found"
@@ -632,10 +680,9 @@ router.post("/transactions", function(req, res) {
 });
 
 
-
-
 router.post("/decrypt", function(req, res) {
     var data = req.body.data;
+    console.log(data);
     data.iv = new Buffer(data.iv, "hex");
     data.ephemPublicKey = new Buffer(data.ephem_public_key, "hex");
     data.ciphertext = new Buffer(data.ciphertext, "hex");
@@ -664,6 +711,7 @@ router.post("/decrypt", function(req, res) {
             });
         })
         .catch(function(err) {
+            console.log(err);
             res.json({
                 success: false,
                 data: "Unable to decrypt the data."
@@ -702,6 +750,7 @@ router.post("/verify", function(req, res) {
             return decrypted.toString();
         })
         .then(function(decrypted) {
+            console.log(decrypted);
             var hash = crypto.createHash("sha256").update(decrypted).digest();
             var pubKey = new Buffer(senderPublicKey, "hex");
 
@@ -799,7 +848,9 @@ router.post('/upload', function(req, res) {
             return;
         }
         res.json({error_code:0,err_desc:null});
-    })
+    });
 });
+
+
 
 module.exports = router;

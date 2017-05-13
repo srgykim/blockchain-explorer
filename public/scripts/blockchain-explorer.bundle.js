@@ -9,11 +9,11 @@ webpackJsonp([0],[
 
 var angular = __webpack_require__(1);
 
-angular.module('blockchainWalletApp').controller('signupCtrl', __webpack_require__(14));
-angular.module('blockchainWalletApp').controller('signinCtrl', __webpack_require__(13));
-angular.module('blockchainWalletApp').controller('mainCtrl', __webpack_require__(12));
-angular.module('blockchainWalletApp').controller('blockCtrl', __webpack_require__(11));
-angular.module('blockchainWalletApp').controller('accountCtrl', __webpack_require__(10));
+angular.module('blockchainWalletApp').controller('signupCtrl', __webpack_require__(13));
+angular.module('blockchainWalletApp').controller('signinCtrl', __webpack_require__(12));
+angular.module('blockchainWalletApp').controller('mainCtrl', __webpack_require__(11));
+angular.module('blockchainWalletApp').controller('blockCtrl', __webpack_require__(10));
+angular.module('blockchainWalletApp').controller('accountCtrl', __webpack_require__(9));
 
 
 /***/ }),
@@ -25,19 +25,19 @@ angular.module('blockchainWalletApp').controller('accountCtrl', __webpack_requir
 
 var angular = __webpack_require__(1);
 
-angular.module('blockchainWalletApp').service('validationService', __webpack_require__(20));
-angular.module('blockchainWalletApp').service('signupService', __webpack_require__(19));
-angular.module('blockchainWalletApp').service('signinService', __webpack_require__(18));
-angular.module('blockchainWalletApp').service('mainService', __webpack_require__(17));
-angular.module('blockchainWalletApp').service('blockService', __webpack_require__(16));
-angular.module('blockchainWalletApp').service('accountService', __webpack_require__(15));
+angular.module('blockchainWalletApp').service('validationService', __webpack_require__(19));
+angular.module('blockchainWalletApp').service('signupService', __webpack_require__(18));
+angular.module('blockchainWalletApp').service('signinService', __webpack_require__(17));
+angular.module('blockchainWalletApp').service('mainService', __webpack_require__(16));
+angular.module('blockchainWalletApp').service('blockService', __webpack_require__(15));
+angular.module('blockchainWalletApp').service('accountService', __webpack_require__(14));
 
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(21);
+__webpack_require__(20);
 module.exports = 'ngSanitize';
 
 
@@ -45,7 +45,7 @@ module.exports = 'ngSanitize';
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(22);
+__webpack_require__(21);
 
 module.exports = 'ui.bootstrap';
 
@@ -4744,164 +4744,11 @@ angular.module('ui.router.state')
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(36);
+__webpack_require__(35);
 module.exports = 'ngFileUpload';
 
 /***/ }),
 /* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var angular = __webpack_require__(1);
-
-var app = angular.module('blockchainWalletApp', [__webpack_require__(4),
-    __webpack_require__(6), __webpack_require__(8), __webpack_require__(5)]);
-
-app.config(function($stateProvider, $urlRouterProvider) {
-
-    var homeState = {
-        name: 'home',
-        url: '/',
-        views: {
-            navbar: {
-                templateUrl: '/templates/navbar.html',
-                controller: 'mainCtrl'
-            },
-            home: {
-                templateUrl: '/templates/home.html',
-                controller: 'mainCtrl'
-            },
-            block: {
-                templateUrl: '/templates/block.html',
-                controller: 'blockCtrl'
-            },
-            explore: {
-                templateUrl: '/templates/explore.html',
-                controller: 'mainCtrl'
-            }
-        }
-    };
-
-    var keygenState = {
-        name: 'keygen',
-        url: '/keygen',
-        views: {
-            navbar: {
-                templateUrl: '/templates/navbar-alt.html',
-                controller: 'mainCtrl'
-            },
-            keygen: {
-                templateUrl: '/templates/keygen.html',
-                controller: 'mainCtrl'
-            }
-        }
-    };
-
-    var sendState = {
-        name: 'send',
-        url: '/send',
-        views: {
-            navbar: {
-                templateUrl: '/templates/navbar-alt.html',
-                controller: 'mainCtrl'
-            },
-            send: {
-                templateUrl: '/templates/send.html',
-                controller: 'mainCtrl'
-            }
-
-        }
-    };
-
-
-    var exploreState = {
-        name: 'explore',
-        url: '/explore',
-        views: {
-            navbar: {
-                templateUrl: '/templates/navbar-alt.html',
-                controller: 'mainCtrl'
-            },
-            explore: {
-                templateUrl: '/templates/explore.html',
-                controller: 'mainCtrl'
-            },
-            block: {
-                templateUrl: '/templates/block.html',
-                controller: 'blockCtrl'
-            }
-
-        }
-    };
-
-    var accountState = {
-        name: 'account',
-        url: '/account',
-        views: {
-            navbar: {
-                templateUrl: '/templates/navbar-alt.html',
-                controller: 'mainCtrl'
-            },
-            home: {
-                templateUrl: '/templates/account.html',
-                controller: 'accountCtrl'
-            }
-        }
-    };
-
-
-
-    var signupState = {
-        name: 'signup',
-        url: '/signup',
-        views: {
-            navbar: {
-                templateUrl: '/templates/navbar-alt.html',
-                controller: 'mainCtrl'
-            },
-            signup: {
-                templateUrl: '/templates/signup.html',
-                controller: 'signupCtrl'
-            }
-
-        }
-    };
-
-    var signinState = {
-        name: 'signin',
-        url: '/signin',
-        views: {
-            navbar: {
-                templateUrl: '/templates/navbar-alt.html',
-                controller: 'mainCtrl'
-            },
-            signin: {
-                templateUrl: '/templates/signin.html',
-                controller: 'signinCtrl'
-            }
-        }
-    };
-
-
-    $stateProvider.state(homeState);
-    $stateProvider.state(sendState);
-    $stateProvider.state(exploreState);
-    $stateProvider.state(keygenState);
-    $stateProvider.state(accountState);
-    $stateProvider.state(signupState);
-    $stateProvider.state(signinState);
-
-    $urlRouterProvider.when('', '/');
-});
-
-__webpack_require__(2);
-// require('./directives');
-__webpack_require__(3);
-
-/***/ }),
-/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4976,7 +4823,7 @@ module.exports = AccountCtrl;
 
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5000,7 +4847,7 @@ module.exports = BlockCtrl;
 
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5135,12 +4982,16 @@ function MainCtrl($scope, $rootScope, $window,
         if ($window.localStorage.token) {
             tx = {
                 receiverUsername: $scope.tx.receiverUsername,
+                sendFileUploaded: $scope.sendFileUploaded,
+                sendFileName: $scope.sendFileName,
                 data: $scope.tx.data
             };
         } else {
             tx = {
                 receiverUsername: $scope.tx.receiverUsername,
                 receiverPublicKey: $scope.tx.receiverPublicKey,
+                sendFileUploaded: $scope.sendFileUploaded,
+                sendFileName: $scope.sendFileName,
                 data: $scope.tx.data
             };
         }
@@ -5205,13 +5056,40 @@ function MainCtrl($scope, $rootScope, $window,
             console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
         });
     };
+    $scope.sendFileUploaded = false;
+    $scope.sendFileName = "";
+        $scope.upload_file = function(file) {
+        // console.log(file);
+        Upload.upload({
+            url: 'http://localhost:9000/api/upload', //webAPI exposed to upload the file
+            data:{file:file} //pass file as data, should be user ng-model
+        }).then(function (resp) { //upload function returns a promise
+            if(resp.data.error_code === 0){ //validate success
+                $scope.uploadFileStatusMessage = "Successfully uploaded your file";
+                $scope.isUploaded = true;
+                $scope.sendFileUploaded = true;
+                $scope.sendFileName = file.name;
+                // $window.alert('Success ' + resp.config.data.file.name + ' uploaded. Response: ');
+            } else {
+                $scope.uploadFileStatusMessage = "An Error Occurred";
+                $scope.isUploaded = false;
+            }
+        }, function (resp) { //catch error
+            console.log('Error status: ' + resp.status);
+            $window.alert('Error status: ' + resp.status);
+        }, function (evt) {
+            console.log(evt);
+            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+        });
+    };
 }
 
 module.exports = MainCtrl;
 
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5250,7 +5128,7 @@ module.exports = SigninCtrl;
 
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5304,7 +5182,7 @@ module.exports = SignupCtrl;
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5318,7 +5196,7 @@ module.exports = AccountService;
 
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5341,7 +5219,7 @@ module.exports = BlockService;
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5569,7 +5447,7 @@ module.exports = MainService;
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5597,7 +5475,7 @@ module.exports = SigninService;
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5633,7 +5511,7 @@ module.exports = SignupService;
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5692,11 +5570,11 @@ function ValidationService() {
 module.exports = ValidationService;
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports) {
 
 /**
- * @license AngularJS v1.6.4
+ * @license AngularJS v1.6.2
  * (c) 2010-2017 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -5720,7 +5598,6 @@ var forEach;
 var isDefined;
 var lowercase;
 var noop;
-var nodeContains;
 var htmlParser;
 var htmlSanitizeWriter;
 
@@ -5921,11 +5798,6 @@ function $SanitizeProvider() {
   htmlParser = htmlParserImpl;
   htmlSanitizeWriter = htmlSanitizeWriterImpl;
 
-  nodeContains = window.Node.prototype.contains || /** @this */ function(arg) {
-    // eslint-disable-next-line no-bitwise
-    return !!(this.compareDocumentPosition(arg) & 16);
-  };
-
   // Regular Expressions for parsing tags and attributes
   var SURROGATE_PAIR_REGEXP = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
     // Match everything outside of normal chars and " (quote character)
@@ -6089,12 +5961,12 @@ function $SanitizeProvider() {
         if (node.nodeType === 1) {
           handler.end(node.nodeName.toLowerCase());
         }
-        nextNode = getNonDescendant('nextSibling', node);
+        nextNode = node.nextSibling;
         if (!nextNode) {
           while (nextNode == null) {
-            node = getNonDescendant('parentNode', node);
+            node = node.parentNode;
             if (node === inertBodyElement) break;
-            nextNode = getNonDescendant('nextSibling', node);
+            nextNode = node.nextSibling;
             if (node.nodeType === 1) {
               handler.end(node.nodeName.toLowerCase());
             }
@@ -6226,17 +6098,8 @@ function $SanitizeProvider() {
         stripCustomNsAttrs(nextNode);
       }
 
-      node = getNonDescendant('nextSibling', node);
+      node = node.nextSibling;
     }
-  }
-
-  function getNonDescendant(propName, node) {
-    // An element is clobbered if its `propName` property points to one of its descendants
-    var nextNode = node[propName];
-    if (nextNode && nodeContains.call(node, nextNode)) {
-      throw $sanitizeMinErr('elclob', 'Failed to sanitize html because the element is clobbered: {0}', node.outerHTML || node.outerText);
-    }
-    return nextNode;
   }
 }
 
@@ -6249,9 +6112,7 @@ function sanitizeText(chars) {
 
 
 // define ngSanitize module and register $sanitize service
-angular.module('ngSanitize', [])
-  .provider('$sanitize', $SanitizeProvider)
-  .info({ angularVersion: '1.6.4' });
+angular.module('ngSanitize', []).provider('$sanitize', $SanitizeProvider);
 
 /**
  * @ngdoc filter
@@ -6454,7 +6315,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports) {
 
 /*
@@ -14235,6 +14096,7 @@ angular.module('ui.bootstrap.timepicker').run(function() {!angular.$$csp().noInl
 angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTypeaheadCss && angular.element(document).find('head').prepend('<style type="text/css">[uib-typeahead-popup].dropdown-menu{display:block;}</style>'); angular.$$uibTypeaheadCss = true; });
 
 /***/ }),
+/* 22 */,
 /* 23 */,
 /* 24 */,
 /* 25 */,
@@ -14247,8 +14109,7 @@ angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInli
 /* 32 */,
 /* 33 */,
 /* 34 */,
-/* 35 */,
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/**!
@@ -17152,5 +17013,158 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var angular = __webpack_require__(1);
+
+var app = angular.module('blockchainWalletApp', [__webpack_require__(4),
+    __webpack_require__(6), __webpack_require__(8), __webpack_require__(5)]);
+
+app.config(function($stateProvider, $urlRouterProvider) {
+
+    var homeState = {
+        name: 'home',
+        url: '/',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar.html',
+                controller: 'mainCtrl'
+            },
+            home: {
+                templateUrl: '/templates/home.html',
+                controller: 'mainCtrl'
+            },
+            block: {
+                templateUrl: '/templates/block.html',
+                controller: 'blockCtrl'
+            },
+            explore: {
+                templateUrl: '/templates/explore.html',
+                controller: 'mainCtrl'
+            }
+        }
+    };
+
+    var keygenState = {
+        name: 'keygen',
+        url: '/keygen',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            keygen: {
+                templateUrl: '/templates/keygen.html',
+                controller: 'mainCtrl'
+            }
+        }
+    };
+
+    var sendState = {
+        name: 'send',
+        url: '/send',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            send: {
+                templateUrl: '/templates/send.html',
+                controller: 'mainCtrl'
+            }
+
+        }
+    };
+
+
+    var exploreState = {
+        name: 'explore',
+        url: '/explore',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            explore: {
+                templateUrl: '/templates/explore.html',
+                controller: 'mainCtrl'
+            },
+            block: {
+                templateUrl: '/templates/block.html',
+                controller: 'blockCtrl'
+            }
+
+        }
+    };
+
+    var accountState = {
+        name: 'account',
+        url: '/account',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            home: {
+                templateUrl: '/templates/account.html',
+                controller: 'accountCtrl'
+            }
+        }
+    };
+
+
+
+    var signupState = {
+        name: 'signup',
+        url: '/signup',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            signup: {
+                templateUrl: '/templates/signup.html',
+                controller: 'signupCtrl'
+            }
+
+        }
+    };
+
+    var signinState = {
+        name: 'signin',
+        url: '/signin',
+        views: {
+            navbar: {
+                templateUrl: '/templates/navbar-alt.html',
+                controller: 'mainCtrl'
+            },
+            signin: {
+                templateUrl: '/templates/signin.html',
+                controller: 'signinCtrl'
+            }
+        }
+    };
+
+
+    $stateProvider.state(homeState);
+    $stateProvider.state(sendState);
+    $stateProvider.state(exploreState);
+    $stateProvider.state(keygenState);
+    $stateProvider.state(accountState);
+    $stateProvider.state(signupState);
+    $stateProvider.state(signinState);
+
+    $urlRouterProvider.when('', '/');
+});
+
+__webpack_require__(2);
+// require('./directives');
+__webpack_require__(3);
+
 /***/ })
-],[9]);
+],[36]);
